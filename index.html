@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Página Web Básica</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>EL REGISTRADOR DE HÁBITOS DE LUDIN </h1>
+        <h3>¡Con el objetivo de medir el nivel espiritual para eliminar el hábito clave en un mes!</h3>
+    </header>
+    <div>
+
+    </div>
+    <main>
+        <div id="dia-actual"></div>
+        <div class="barra-container">
+            <div class="barra-estado" id="barraEstado"></div>
+        </div>
+        <div class="botones-container">
+            <div class="caja">
+                <button id="boton1" onclick="incrementarBarra(1)"> 0 dosis </button>
+            </div>
+            <div class="caja">
+                <button id="boton2" onclick="incrementarBarra(2)"> 0 Redes </button>
+            </div>
+            <div class="caja">
+                <button id="boton3" onclick="incrementarBarra(3)"> Lectura y devocional</button>
+            </div>
+            <div class="caja">
+                <button id="boton4" onclick="incrementarBarra(4)">Lectura bíblica </button>
+            </div>
+            <div class="caja">
+                <button id="boton5" onclick="incrementarBarra(5)"> Ejercicio físico </button>
+            </div>
+            <div class="caja">
+                <button id="boton6" onclick="incrementarBarra(6)"> Escribir en diario</button>
+            </div>
+        </div>
+        <div class="acciones-container">
+            <button class="boton-accion" onclick="resetearBarra()">Falla grave</button>
+            <button class="boton-accion" onclick="resetearDiaInicio()">Restablecer Día de Inicio</button>
+        </div>
+        <br>
+        <br>
+        <div id="mensaje-felicitaciones" style="display: none; font-size: 24px; color: green; text-align: center; margin-top: 20px;">¡Felicitaciones, lo lograste!</div>
+        <br>
+        <br>
+        <div id="mensaje-muy-bien" style="display: none; font-size: 18px; color: rgb(193, 193, 203); text-align: center; margin-top: 20px;">¡Muy bien hecho!</div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Ludin Guerra</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
