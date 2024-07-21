@@ -23,7 +23,7 @@ nav ul li {
 }
 
 nav ul li a {
-    color: #fff;
+     background-color: rgba(30, 61, 89, 0.5);
     text-decoration: none;
 }
 
