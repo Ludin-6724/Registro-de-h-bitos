@@ -147,7 +147,7 @@ main {
 }
 /* Fondo de la página */
 body {
-    background-image:  url('https://pixabay.com/es/photos/mujer-invierno-nieve-fantas%C3%ADa-3452327'); /* URL de la imagen de fondo */
+    background-image:  url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fGZvcmVzdHxlbnwwfHx8fDE2Mjk2MzEyNzc&ixlib=rb-1.2.1&q=80&w=1080'); /* URL de la imagen de fondo */
     background-size: cover; /* Asegura que la imagen cubra toda la página */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
