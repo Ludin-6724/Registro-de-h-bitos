@@ -11,17 +11,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let pulsosTotales = 0;
     let pulsosPorBoton = JSON.parse(localStorage.getItem('pulsosPorBoton')) || [0, 0, 0, 0, 0, 0];
     let fechaInicio = new Date(localStorage.getItem('fechaInicio'));
-    let diaActual = Math.floor((new Date() - fechaInicio) / (1000 * 60 * 60 * 24));
+    let diaActual = calcularDiasDesdeInicio(fechaInicio);
     let ultimosClics = JSON.parse(localStorage.getItem('ultimosClics')) || [null, null, null, null, null, null]; // Añadido para registrar la fecha del último clic por botón
 
     if (!fechaInicio || diaActual >= DIAS_TOTAL) {
-        fechaInicio = new Date();
-        localStorage.setItem('fechaInicio', fechaInicio);
-        pulsosPorBoton = [0, 0, 0, 0, 0, 0];
-        localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
-        ultimosClics = [null, null, null, null, null, null]; // Inicializar ultimosClics
-        localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics)); // Guardar ultimosClics en localStorage
-        diaActual = 0;
+        reiniciarProgreso();
+    }
+
+    function calcularDiasDesdeInicio(fecha) {
+        const ahora = new Date();
+        const diferencia = ahora - new Date(fecha);
+        return Math.floor(diferencia / (1000 * 60 * 60 * 24));
     }
 
     function incrementarBarra(botonId) {
@@ -49,11 +49,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let color;
         
         if (progreso <= 33) {
-              color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
+            color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
         } else if (progreso <= 66) {
-              color = `linear-gradient(to right, red 33%, yellow ${progreso}%, transparent ${progreso}%)`;
+            color = `linear-gradient(to right, red 33%, yellow ${(progreso - 33) * 3}%, transparent ${progreso}%)`;
         } else {
-               color = `linear-gradient(to right, red 33%, yellow 66%, green ${progreso}%, transparent ${progreso}%)`;
+            color = `linear-gradient(to right, red 33%, yellow 66%, green ${(progreso - 66) * 1.5}%, transparent ${progreso}%)`;
         }
 
         document.getElementById('barraEstado').style.width = progreso + '%';
@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function guardarEstado() {
         localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
         localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics)); // Guardar ultimosClics en localStorage
+        localStorage.setItem('fechaInicio', fechaInicio.toISOString()); // Asegurar que la fecha de inicio esté guardada en el formato correcto
     }
 
     function resetearBarra() {
@@ -78,10 +79,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function resetearDiaInicio() {
         fechaInicio = new Date();
-        localStorage.setItem('fechaInicio', fechaInicio);
+        localStorage.setItem('fechaInicio', fechaInicio.toISOString());
         resetearBarra();
         diaActual = 0;
         document.getElementById('dia-actual').innerText = `Día ${diaActual + 1} de 30`;
+    }
+
+    function reiniciarProgreso() {
+        fechaInicio = new Date();
+        localStorage.setItem('fechaInicio', fechaInicio.toISOString());
+        pulsosPorBoton = [0, 0, 0, 0, 0, 0];
+        ultimosClics = [null, null, null, null, null, null];
+        localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
+        localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics));
+        diaActual = 0;
     }
 
     function mostrarMensajeFelicitaciones() {
@@ -102,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
     pulsosTotales = pulsosPorBoton.reduce((a, b) => a + b, 0);
     actualizarBarra();
 });
-
 //   if (progreso <= 33) {
  //   color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
 //} else if (progreso <= 66) {
