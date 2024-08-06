@@ -147,7 +147,7 @@ main {
 }
 /* Fondo de la página */
 body {
-    background-image: url('https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* URL de la imagen de fondo */
+    background-image: url('https://images.unsplash.com/photo-1533227356842-2b94d2d24d8d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* URL de la imagen de fondo */
     background-size: cover; /* Asegura que la imagen cubra toda la página */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
