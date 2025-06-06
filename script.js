@@ -93,13 +93,12 @@
             addBtn.dataset.user = uIdx;
 
             const delBtn = document.createElement('button');
-            delBtn.textContent = 'Eliminar';
+            delBtn.textContent = 'Eliminar usuario';
             delBtn.className = 'removeUserBtn';
             delBtn.dataset.user = uIdx;
 
             header.appendChild(title);
             header.appendChild(addBtn);
-            header.appendChild(delBtn);
             uDiv.appendChild(header);
 
             const bar = document.createElement('div');
@@ -173,6 +172,7 @@
                 habitList.appendChild(row);
             });
             uDiv.appendChild(habitList);
+            uDiv.appendChild(delBtn);
             container.appendChild(uDiv);
 
             if(board){
@@ -256,6 +256,11 @@
         document.getElementById('createUserBtn').addEventListener('click',()=>{
             const name = document.getElementById('userName').value.trim();
             if(name){
+                const pwd = prompt('Ingrese la contraseña para crear usuario:');
+                if(pwd !== '1234'){
+                    alert('Contraseña incorrecta');
+                    return;
+                }
                 addUser(name);
                 document.getElementById('userName').value='';
                 document.getElementById('userForm').classList.add('hidden');
@@ -287,6 +292,11 @@
                 const h = parseInt(e.target.dataset.habit,10);
                 removeHabit(u,h);
             }else if(e.target.classList.contains('removeUserBtn')){
+                const pwd = prompt('Ingrese la contraseña para eliminar usuario:');
+                if(pwd !== '1234'){
+                    alert('Contraseña incorrecta');
+                    return;
+                }
                 const u = parseInt(e.target.dataset.user,10);
                 removeUser(u);
             }

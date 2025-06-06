@@ -69,7 +69,8 @@ header {
 }
 
 .removeUserBtn {
-    margin-left: 10px;
+    display: block;
+    margin: 10px 0 0 auto;
 }
 
 .progress-bar {
