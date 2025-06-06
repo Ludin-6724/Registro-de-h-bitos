@@ -93,22 +93,21 @@ header {
 }
 
 .week-check {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
     display: flex;
+    gap: 2px;
+    margin-top: 4px;
     font-size: 12px;
-    pointer-events: none;
 }
 
 .week-check .day {
-    flex: 1;
-    text-align: center;
-    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    border: 1px solid #ccc;
     color: #000;
-    background: rgba(255,255,255,0.6);
 }
 
 .week-check .day.done {
@@ -117,8 +116,8 @@ header {
 }
 
 .week-check .day.today {
+    border-color: #e74c3c;
     font-weight: bold;
-    border-bottom: 2px solid #e74c3c;
 }
 
 .modal {

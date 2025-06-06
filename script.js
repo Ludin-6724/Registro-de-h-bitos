@@ -139,10 +139,9 @@
                     ds.className = 'day';
                     if(h.loggedDays.includes(d)) ds.classList.add('done');
                     if(d===today) ds.classList.add('today');
-                    ds.textContent = labels[i];
+                    ds.textContent = h.loggedDays.includes(d) ? '✓' : labels[i];
                     weekDiv.appendChild(ds);
                 });
-                bar.appendChild(weekDiv);
 
                 const txt = document.createElement('span');
                 txt.textContent = `${h.progress}/${h.goal}`;
@@ -156,6 +155,7 @@
                 row.appendChild(logBtn);
                 row.appendChild(nameSpan);
                 row.appendChild(bar);
+                row.appendChild(weekDiv);
                 row.appendChild(txt);
                 row.appendChild(remBtn);
                 habitList.appendChild(row);
