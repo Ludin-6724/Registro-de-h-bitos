@@ -13,8 +13,35 @@ header {
     color: #fff;
 }
 
+#layout {
+    display: flex;
+}
+
 #users {
+    flex: 3;
     padding: 20px;
+}
+
+#competition {
+    flex: 1;
+    padding: 20px;
+    background: #fff;
+    border-left: 1px solid #ddd;
+}
+
+#competition h2 {
+    margin-top: 0;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.score-row .progress-bar {
+    flex: 1;
 }
 
 .user {

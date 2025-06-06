@@ -48,6 +48,8 @@
     function render(){
         const container = document.getElementById('users');
         container.innerHTML = '';
+        const board = document.getElementById('scoreboard');
+        if(board) board.innerHTML = '';
         data.users.forEach((user,uIdx)=>{
             const uDiv = document.createElement('div');
             uDiv.className = 'user';
@@ -114,6 +116,24 @@
             });
             uDiv.appendChild(habitList);
             container.appendChild(uDiv);
+
+            if(board){
+                const row = document.createElement('div');
+                row.className = 'score-row';
+                const label = document.createElement('span');
+                label.textContent = user.name;
+                const pb = document.createElement('div');
+                pb.className = 'progress-bar';
+                const pf = document.createElement('div');
+                pf.className = 'progress-fill';
+                const avg = average(user);
+                pf.style.width = (avg*100)+'%';
+                pf.style.background = 'linear-gradient(to right, #3498db, #e74c3c)';
+                pb.appendChild(pf);
+                row.appendChild(label);
+                row.appendChild(pb);
+                board.appendChild(row);
+            }
         });
     }
 
