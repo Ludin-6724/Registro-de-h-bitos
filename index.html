@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web Básica</title>
+    <title>Registro de Hábitos</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1> REGISTRADOR DE HÁBITOS DE LUDIN </h1>
+        <h1>REGISTRADOR DE HÁBITOS</h1>
     </header>
-    <div>
-
-    </div>
     <main>
         <div id="dia-actual"></div>
-        <button id="configButton" onclick="toggleConfig()">Objetivos semanales</button>
+        <button class="boton-accion" onclick="showAddUser()">Agregar usuario</button>
+        <div id="addUserMenu" class="config-menu" style="display:none;">
+            Nombre: <input type="text" id="nuevoUsuario">
+            <button onclick="agregarUsuario()">Crear</button>
+        </div>
+        <div id="usuarios"></div>
         <div id="configMenu" class="config-menu" style="display:none;">
+            <h3 id="configTitulo"></h3>
+            <label>Inicio de semana:
+                <select id="startDaySelect">
+                    <option value="1">Lunes</option>
+                    <option value="2">Martes</option>
+                    <option value="3">Miércoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sábado</option>
+                    <option value="0">Domingo</option>
+                </select>
+            </label>
             <div>Hábito 1: <input type="number" id="objetivo1" min="1"></div>
             <div>Hábito 2: <input type="number" id="objetivo2" min="1"></div>
             <div>Hábito 3: <input type="number" id="objetivo3" min="1"></div>
@@ -25,45 +39,6 @@
             <div>Hábito 6: <input type="number" id="objetivo6" min="1"></div>
             <button onclick="guardarObjetivos()">Guardar</button>
         </div>
-        <div class="barra-container">
-            <div class="barra-estado" id="barraEstado"></div>
-        </div>
-        <div class="botones-container">
-            <div class="caja">
-                <button id="boton1" onclick="incrementarBarra(1)"> 0 dosis </button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso1"></div></div>
-            </div>
-            <div class="caja">
-                <button id="boton2" onclick="incrementarBarra(2)"> 0 Redes </button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso2"></div></div>
-            </div>
-            <div class="caja">
-                <button id="boton3" onclick="incrementarBarra(3)"> Lectura y devocional</button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso3"></div></div>
-            </div>
-            <div class="caja">
-                <button id="boton4" onclick="incrementarBarra(4)">Lectura bíblica </button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso4"></div></div>
-            </div>
-            <div class="caja">
-                <button id="boton5" onclick="incrementarBarra(5)"> Ejercicio físico </button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso5"></div></div>
-            </div>
-            <div class="caja">
-                <button id="boton6" onclick="incrementarBarra(6)"> Escribir en diario</button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso6"></div></div>
-            </div>
-        </div>
-        <div class="acciones-container">
-            <button class="boton-accion" onclick="resetearBarra()">Falla grave</button>
-            <button class="boton-accion" onclick="resetearDiaInicio()">Restablecer Día de Inicio</button>
-        </div>
-        <br>
-        <br>
-        <div id="mensaje-felicitaciones" style="display: none; font-size: 24px; color: green; text-align: center; margin-top: 20px;">¡Felicitaciones, lo lograste!</div>
-        <br>
-        <br>
-        <div id="mensaje-muy-bien" style="display: none; font-size: 18px; color: rgb(193, 193, 203); text-align: center; margin-top: 20px;">¡Muy bien hecho!</div>
     </main>
     <footer>
         <p>&copy; 2024 Ludin Guerra</p>

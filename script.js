@@ -1,97 +1,159 @@
 document.addEventListener('DOMContentLoaded', () => {
     const HABITOS = 6;
+    let data = JSON.parse(localStorage.getItem('habitData')) || {
+        users: [{
+            name: 'Usuario 1',
+            objetivos: Array(HABITOS).fill(7),
+            progresos: Array(HABITOS).fill(0),
+            ultimos: Array(HABITOS).fill(null),
+            startDay: 1,
+            semanaInicio: null
+        }]
+    };
+    let currentUser = 0;
 
-    const obtenerSemana = (fecha) => {
+    const obtenerSemana = (fecha, startDay) => {
         const f = new Date(fecha);
         const dia = f.getDay();
-        const diff = f.getDate() - dia + (dia === 0 ? -6 : 1); // lunes
+        const diff = f.getDate() - ((dia - startDay + 7) % 7);
         f.setDate(diff);
-        f.setHours(0,0,0,0);
-        return f.toISOString().slice(0,10);
+        f.setHours(0, 0, 0, 0);
+        return f.toISOString().slice(0, 10);
     };
 
-    let progresos = JSON.parse(localStorage.getItem('progresos')) || Array(HABITOS).fill(0);
-    let objetivos = JSON.parse(localStorage.getItem('objetivos')) || Array(HABITOS).fill(7);
-    let ultimos = JSON.parse(localStorage.getItem('ultimos')) || Array(HABITOS).fill(null);
-    let semanaInicio = localStorage.getItem('semanaInicio');
-    const semanaActual = obtenerSemana(new Date());
-
-    if (semanaInicio !== semanaActual) {
-        progresos = Array(HABITOS).fill(0);
-        ultimos = Array(HABITOS).fill(null);
-        semanaInicio = semanaActual;
-    }
-
-    const guardar = () => {
-        localStorage.setItem('progresos', JSON.stringify(progresos));
-        localStorage.setItem('objetivos', JSON.stringify(objetivos));
-        localStorage.setItem('ultimos', JSON.stringify(ultimos));
-        localStorage.setItem('semanaInicio', semanaInicio);
+    const guardarDatos = () => {
+        localStorage.setItem('habitData', JSON.stringify(data));
     };
 
-    const actualizarBarras = () => {
+    const resetIfNewWeek = () => {
+        const hoy = new Date();
+        data.users.forEach(user => {
+            const semanaAct = obtenerSemana(hoy, user.startDay);
+            if (user.semanaInicio !== semanaAct) {
+                user.progresos = Array(HABITOS).fill(0);
+                user.ultimos = Array(HABITOS).fill(null);
+                user.semanaInicio = semanaAct;
+            }
+        });
+        guardarDatos();
+    };
+
+    const createHabitosHTML = (uIndex) => {
+        let html = '';
+        for (let i = 0; i < HABITOS; i++) {
+            html += `<div class="caja">
+                <button id="boton-${uIndex}-${i}" onclick="incrementarBarra(${uIndex},${i})">0</button>
+                <div class="barra-habito"><div class="progreso-habito" id="progreso-${uIndex}-${i}"></div></div>
+            </div>`;
+        }
+        return html;
+    };
+
+    const renderUsuarios = () => {
+        const cont = document.getElementById('usuarios');
+        cont.innerHTML = '';
+        data.users.forEach((user, idx) => {
+            const div = document.createElement('div');
+            div.className = 'usuario';
+            div.innerHTML = `<h2>${user.name}</h2>
+                <div class="barra-container"><div class="barra-estado" id="barraEstado-${idx}"></div></div>
+                <div class="botones-container">${createHabitosHTML(idx)}</div>
+                <div class="acciones-container">
+                    <button class="boton-accion" onclick="openConfig(${idx})">Configurar</button>
+                    <button class="boton-accion" onclick="shareUser(${idx})">Compartir</button>
+                </div>`;
+            cont.appendChild(div);
+        });
+        actualizarTodas();
+    };
+
+    const actualizarUsuario = (idx) => {
+        const user = data.users[idx];
         let suma = 0;
         for (let i = 0; i < HABITOS; i++) {
-            const porcentaje = Math.min(1, progresos[i] / objetivos[i]);
-            const barra = document.getElementById(`progreso${i+1}`);
-            if (barra) barra.style.width = `${porcentaje * 100}%`;
-            const boton = document.getElementById(`boton${i+1}`);
-            if (boton) boton.innerText = `${progresos[i]}/${objetivos[i]}`;
-            suma += porcentaje;
+            const porc = Math.min(1, user.progresos[i] / user.objetivos[i]);
+            const barra = document.getElementById(`progreso-${idx}-${i}`);
+            if (barra) barra.style.width = `${porc * 100}%`;
+            const boton = document.getElementById(`boton-${idx}-${i}`);
+            if (boton) boton.innerText = `${user.progresos[i]}/${user.objetivos[i]}`;
+            suma += porc;
         }
         const promedio = suma / HABITOS;
-        const barraGeneral = document.getElementById('barraEstado');
-        barraGeneral.style.width = `${promedio*100}%`;
-        barraGeneral.style.backgroundColor = `hsl(${(1-promedio)*240},100%,50%)`;
-        const fechaTexto = new Date().toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-        document.getElementById('dia-actual').innerText = fechaTexto;
+        const barraGeneral = document.getElementById(`barraEstado-${idx}`);
+        if (barraGeneral) {
+            barraGeneral.style.width = `${promedio * 100}%`;
+            barraGeneral.style.backgroundColor = `hsl(${(1 - promedio) * 240},100%,50%)`;
+        }
+        document.getElementById('dia-actual').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    window.incrementarBarra = (id) => {
+    const actualizarTodas = () => data.users.forEach((_, i) => actualizarUsuario(i));
+
+    window.incrementarBarra = (uIdx, hIdx) => {
         const hoy = new Date().toLocaleDateString();
-        if (ultimos[id-1] === hoy) {
-            alert('Ya has registrado este hábito hoy.');
+        const user = data.users[uIdx];
+        if (user.ultimos[hIdx] === hoy) {
+            alert('Ya registrado hoy');
             return;
         }
-        progresos[id-1]++;
-        ultimos[id-1] = hoy;
-        guardar();
-        actualizarBarras();
+        user.progresos[hIdx]++;
+        user.ultimos[hIdx] = hoy;
+        guardarDatos();
+        actualizarUsuario(uIdx);
     };
 
-    window.resetearBarra = () => {
-        progresos = Array(HABITOS).fill(0);
-        ultimos = Array(HABITOS).fill(null);
-        guardar();
-        actualizarBarras();
-    };
-
-    window.resetearDiaInicio = () => {
-        semanaInicio = obtenerSemana(new Date());
-        progresos = Array(HABITOS).fill(0);
-        ultimos = Array(HABITOS).fill(null);
-        guardar();
-        actualizarBarras();
-    };
-
-    window.toggleConfig = () => {
+    window.openConfig = (uIdx) => {
+        currentUser = uIdx;
+        const user = data.users[uIdx];
         const menu = document.getElementById('configMenu');
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        menu.style.display = 'block';
+        document.getElementById('configTitulo').innerText = `Configurar ${user.name}`;
         for (let i = 0; i < HABITOS; i++) {
-            const input = document.getElementById(`objetivo${i+1}`);
-            input.value = objetivos[i];
+            document.getElementById(`objetivo${i + 1}`).value = user.objetivos[i];
         }
+        document.getElementById('startDaySelect').value = user.startDay;
     };
 
     window.guardarObjetivos = () => {
+        const user = data.users[currentUser];
         for (let i = 0; i < HABITOS; i++) {
-            const val = parseInt(document.getElementById(`objetivo${i+1}`).value, 10);
-            if (!isNaN(val) && val > 0) objetivos[i] = val;
+            const val = parseInt(document.getElementById(`objetivo${i + 1}`).value, 10);
+            if (!isNaN(val) && val > 0) user.objetivos[i] = val;
         }
-        guardar();
+        user.startDay = parseInt(document.getElementById('startDaySelect').value, 10);
+        guardarDatos();
         document.getElementById('configMenu').style.display = 'none';
-        actualizarBarras();
+        resetIfNewWeek();
+        actualizarUsuario(currentUser);
     };
 
-    actualizarBarras();
+    window.showAddUser = () => {
+        document.getElementById('addUserMenu').style.display = 'block';
+    };
+
+    window.agregarUsuario = () => {
+        const nombre = document.getElementById('nuevoUsuario').value.trim();
+        if (nombre) {
+            data.users.push({
+                name: nombre,
+                objetivos: Array(HABITOS).fill(7),
+                progresos: Array(HABITOS).fill(0),
+                ultimos: Array(HABITOS).fill(null),
+                startDay: 1,
+                semanaInicio: null
+            });
+            document.getElementById('nuevoUsuario').value = '';
+            document.getElementById('addUserMenu').style.display = 'none';
+            guardarDatos();
+            resetIfNewWeek();
+            renderUsuarios();
+        }
+    };
+
+    window.shareUser = (uIdx) => {
+        alert('Invitación enviada para competir con ' + data.users[uIdx].name);
+    };
+
+    resetIfNewWeek();
+    renderUsuarios();
 });
