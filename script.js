@@ -12,12 +12,26 @@
         return d.toISOString();
     }
 
+    function startOfDay(){
+        const d = new Date();
+        d.setHours(0,0,0,0);
+        return d.toISOString();
+    }
+
     function load(){
         try {
             const raw = localStorage.getItem(USER_KEY);
             const parsed = JSON.parse(raw);
             if(parsed && Array.isArray(parsed.users)){
                 data = parsed;
+                data.users.forEach(u=>{
+                    if(!Array.isArray(u.habits)) u.habits = [];
+                    u.habits.forEach(h=>{
+                        if(typeof h.progress !== 'number') h.progress = 0;
+                        if(typeof h.goal !== 'number') h.goal = 1;
+                        if(!('lastLogged' in h)) h.lastLogged = null;
+                    });
+                });
             }
         } catch(e){ /* ignore */ }
     }
@@ -30,7 +44,10 @@
         const start = startOfWeek();
         if(data.lastReset !== start){
             data.users.forEach(u=>{
-                u.habits.forEach(h=> h.progress = 0);
+                u.habits.forEach(h=> {
+                    h.progress = 0;
+                    h.lastLogged = null;
+                });
             });
             data.lastReset = start;
             save();
@@ -85,6 +102,7 @@
                 logBtn.className = 'logHabitBtn';
                 logBtn.dataset.user = uIdx;
                 logBtn.dataset.habit = hIdx;
+                if(h.lastLogged === startOfDay()) logBtn.disabled = true;
 
                 const nameSpan = document.createElement('span');
                 nameSpan.textContent = h.name;
@@ -141,18 +159,22 @@
         data.users.push({ name: name, habits: [] });
         save();
         render();
+        updateToday();
     }
 
     function addHabit(userIdx,name,goal){
         const user = data.users[userIdx];
-        user.habits.push({ name:name, goal:goal, progress:0 });
+        user.habits.push({ name:name, goal:goal, progress:0, lastLogged:null });
         save();
         render();
     }
 
     function logHabit(userIdx,habitIdx){
         const h = data.users[userIdx].habits[habitIdx];
+        const today = startOfDay();
+        if(h.lastLogged === today) return;
         h.progress = Math.min(h.goal, h.progress + 1);
+        h.lastLogged = today;
         save();
         render();
     }
@@ -161,6 +183,15 @@
         data.users[userIdx].habits.splice(habitIdx,1);
         save();
         render();
+    }
+
+    function updateToday(){
+        const el = document.getElementById('today');
+        if(el){
+            const now = new Date();
+            const options = { weekday: 'long', year:'numeric', month:'long', day:'numeric' };
+            el.textContent = now.toLocaleDateString(undefined, options);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {

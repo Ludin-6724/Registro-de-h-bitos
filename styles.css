@@ -13,6 +13,16 @@ header {
     color: #fff;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#today {
+    font-weight: bold;
+}
+
 #layout {
     display: flex;
 }
