@@ -198,6 +198,8 @@
         load();
         resetWeekIfNeeded();
         render();
+        updateToday();
+        setInterval(updateToday, 60000);
 
         document.getElementById('addUserBtn').addEventListener('click',()=>{
             document.getElementById('userForm').classList.remove('hidden');
