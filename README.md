@@ -6,6 +6,6 @@ Esta aplicación permite registrar hábitos de manera local usando el navegador.
 1. Pulsa **Agregar usuario** y escribe el nombre.
 2. Para cada usuario puedes añadir hábitos con su objetivo semanal.
 3. Al pulsar el botón de cada hábito se incrementa el progreso de la semana.
-4. La barra principal cambia de color: rojo cuando el avance es bueno y azul cuando falta cumplir los objetivos.
+4. La barra principal muestra un gradiente que va de azul a rojo según el progreso general y cada hábito tiene una barra verde independiente.
 
 Los datos se guardan en `localStorage` y se reinician al comenzar una nueva semana según la hora local del dispositivo.

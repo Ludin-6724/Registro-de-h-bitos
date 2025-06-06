@@ -69,7 +69,7 @@
             fill.className = 'progress-fill';
             const avg = average(user);
             fill.style.width = (avg*100)+'%';
-            fill.style.background = avg >= 0.5 ? '#e74c3c' : '#3498db';
+            fill.style.background = 'linear-gradient(to right, #3498db, #e74c3c)';
             bar.appendChild(fill);
             uDiv.appendChild(bar);
 
@@ -93,6 +93,7 @@
                 fill.className = 'progress-fill';
                 const ratio = Math.min(1, h.progress / h.goal);
                 fill.style.width = (ratio*100)+'%';
+                fill.style.background = '#2ecc71';
                 bar.appendChild(fill);
 
                 const txt = document.createElement('span');
