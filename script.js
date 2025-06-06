@@ -1,14 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let data = JSON.parse(localStorage.getItem('habitData')) || {
-        users: [{
-            name: 'Usuario 1',
-            startDay: 1,
-            semanaInicio: null,
-            habitos: [
-                { nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null }
-            ]
-        }]
-    };
+    let data = JSON.parse(localStorage.getItem('habitData'));
+    if (!data || !Array.isArray(data.users)) {
+        data = {
+            users: [{
+                name: 'Usuario 1',
+                startDay: 1,
+                semanaInicio: null,
+                habitos: [
+                    { nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null }
+                ]
+            }]
+        };
+    }
     let currentUser = 0;
     let editHabitos = [];
 
