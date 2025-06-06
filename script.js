@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let data = JSON.parse(localStorage.getItem('habitData'));
+    let raw = localStorage.getItem('habitData');
+    let data;
+    try {
+        data = JSON.parse(raw);
+    } catch {
+        data = null;
+    }
     if (!data || !Array.isArray(data.users)) {
         data = {
             users: [{
