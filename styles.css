@@ -92,6 +92,35 @@ header {
     flex: 1;
 }
 
+.week-check {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.week-check .day {
+    flex: 1;
+    text-align: center;
+    line-height: 20px;
+    color: #000;
+    background: rgba(255,255,255,0.6);
+}
+
+.week-check .day.done {
+    background: #2ecc71;
+    color: #fff;
+}
+
+.week-check .day.today {
+    font-weight: bold;
+    border-bottom: 2px solid #e74c3c;
+}
+
 .modal {
     position: fixed;
     top: 50%;

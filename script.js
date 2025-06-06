@@ -18,6 +18,17 @@
         return d.toISOString();
     }
 
+    function weekDates(){
+        const start = new Date(startOfWeek());
+        const days = [];
+        for(let i=0;i<7;i++){
+            const d = new Date(start);
+            d.setDate(start.getDate()+i);
+            days.push(d.toISOString());
+        }
+        return days;
+    }
+
     function load(){
         try {
             const raw = localStorage.getItem(USER_KEY);
@@ -30,6 +41,7 @@
                         if(typeof h.progress !== 'number') h.progress = 0;
                         if(typeof h.goal !== 'number') h.goal = 1;
                         if(!('lastLogged' in h)) h.lastLogged = null;
+                        if(!Array.isArray(h.loggedDays)) h.loggedDays = [];
                     });
                 });
             }
@@ -47,6 +59,7 @@
                 u.habits.forEach(h=> {
                     h.progress = 0;
                     h.lastLogged = null;
+                    h.loggedDays = [];
                 });
             });
             data.lastReset = start;
@@ -93,6 +106,8 @@
             uDiv.appendChild(bar);
 
             const habitList = document.createElement('div');
+            const week = weekDates();
+            const today = startOfDay();
             user.habits.forEach((h,hIdx)=>{
                 const row = document.createElement('div');
                 row.className = 'habit';
@@ -102,7 +117,7 @@
                 logBtn.className = 'logHabitBtn';
                 logBtn.dataset.user = uIdx;
                 logBtn.dataset.habit = hIdx;
-                if(h.lastLogged === startOfDay()) logBtn.disabled = true;
+                if(h.loggedDays.includes(today)) logBtn.disabled = true;
 
                 const nameSpan = document.createElement('span');
                 nameSpan.textContent = h.name;
@@ -115,6 +130,19 @@
                 fill.style.width = (ratio*100)+'%';
                 fill.style.background = '#2ecc71';
                 bar.appendChild(fill);
+
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'week-check';
+                const labels = ['L','M','M','J','V','S','D'];
+                week.forEach((d,i)=>{
+                    const ds = document.createElement('span');
+                    ds.className = 'day';
+                    if(h.loggedDays.includes(d)) ds.classList.add('done');
+                    if(d===today) ds.classList.add('today');
+                    ds.textContent = labels[i];
+                    weekDiv.appendChild(ds);
+                });
+                bar.appendChild(weekDiv);
 
                 const txt = document.createElement('span');
                 txt.textContent = `${h.progress}/${h.goal}`;
@@ -164,7 +192,7 @@
 
     function addHabit(userIdx,name,goal){
         const user = data.users[userIdx];
-        user.habits.push({ name:name, goal:goal, progress:0, lastLogged:null });
+        user.habits.push({ name:name, goal:goal, progress:0, lastLogged:null, loggedDays:[] });
         save();
         render();
     }
@@ -172,9 +200,10 @@
     function logHabit(userIdx,habitIdx){
         const h = data.users[userIdx].habits[habitIdx];
         const today = startOfDay();
-        if(h.lastLogged === today) return;
+        if(h.loggedDays.includes(today)) return;
         h.progress = Math.min(h.goal, h.progress + 1);
         h.lastLogged = today;
+        h.loggedDays.push(today);
         save();
         render();
     }
