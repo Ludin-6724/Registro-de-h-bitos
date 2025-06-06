@@ -6,18 +6,40 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
         data = null;
     }
-    if (!data || !Array.isArray(data.users)) {
-        data = {
-            users: [{
-                name: 'Usuario 1',
-                startDay: 1,
-                semanaInicio: null,
-                habitos: [
-                    { nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null }
-                ]
-            }]
-        };
-    }
+
+    const defaultHabit = () => ({ nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null });
+    const defaultUser = () => ({
+        name: 'Usuario 1',
+        startDay: 1,
+        semanaInicio: null,
+        habitos: [ defaultHabit() ]
+    });
+
+    const sanitizeData = () => {
+        if (!data || !Array.isArray(data.users)) {
+            data = { users: [ defaultUser() ] };
+        } else {
+            data.users = data.users.map(u => {
+                if (!u || typeof u !== 'object') return defaultUser();
+                const user = {
+                    name: typeof u.name === 'string' && u.name.trim() ? u.name : 'Usuario',
+                    startDay: typeof u.startDay === 'number' ? u.startDay : 1,
+                    semanaInicio: typeof u.semanaInicio === 'string' ? u.semanaInicio : null,
+                    habitos: Array.isArray(u.habitos) ? u.habitos : [ defaultHabit() ]
+                };
+                user.habitos = user.habitos.map(h => ({
+                    nombre: typeof h.nombre === 'string' && h.nombre.trim() ? h.nombre : 'Hábito',
+                    objetivo: typeof h.objetivo === 'number' && h.objetivo > 0 ? h.objetivo : 7,
+                    progreso: typeof h.progreso === 'number' ? h.progreso : 0,
+                    ultimo: typeof h.ultimo === 'string' ? h.ultimo : null
+                }));
+                return user;
+            });
+        }
+        localStorage.setItem('habitData', JSON.stringify(data));
+    };
+
+    sanitizeData();
     let currentUser = 0;
     let editHabitos = [];
 
