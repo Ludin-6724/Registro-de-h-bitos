@@ -1,122 +1,97 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var button = document.getElementById('myButton');
-    button.addEventListener('click', function() {
-        alert('¡Haz hecho clic en el botón!');
-    });
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const TOTAL_PULSOS = 168; // 28 pulsos por cada uno de los 6 botones
-    const MAX_PULSOS_POR_BOTON = 28;
-    const DIAS_TOTAL = 30;
-    let pulsosTotales = 0;
-    let pulsosPorBoton = JSON.parse(localStorage.getItem('pulsosPorBoton')) || [0, 0, 0, 0, 0, 0];
-    let fechaInicio = new Date(localStorage.getItem('fechaInicio'));
-    let diaActual = calcularDiasDesdeInicio(fechaInicio);
-    let ultimosClics = JSON.parse(localStorage.getItem('ultimosClics')) || [null, null, null, null, null, null]; // Añadido para registrar la fecha del último clic por botón
+document.addEventListener('DOMContentLoaded', () => {
+    const HABITOS = 6;
 
-    if (!fechaInicio || diaActual >= DIAS_TOTAL) {
-        reiniciarProgreso();
+    const obtenerSemana = (fecha) => {
+        const f = new Date(fecha);
+        const dia = f.getDay();
+        const diff = f.getDate() - dia + (dia === 0 ? -6 : 1); // lunes
+        f.setDate(diff);
+        f.setHours(0,0,0,0);
+        return f.toISOString().slice(0,10);
+    };
+
+    let progresos = JSON.parse(localStorage.getItem('progresos')) || Array(HABITOS).fill(0);
+    let objetivos = JSON.parse(localStorage.getItem('objetivos')) || Array(HABITOS).fill(7);
+    let ultimos = JSON.parse(localStorage.getItem('ultimos')) || Array(HABITOS).fill(null);
+    let semanaInicio = localStorage.getItem('semanaInicio');
+    const semanaActual = obtenerSemana(new Date());
+
+    if (semanaInicio !== semanaActual) {
+        progresos = Array(HABITOS).fill(0);
+        ultimos = Array(HABITOS).fill(null);
+        semanaInicio = semanaActual;
     }
 
-    function calcularDiasDesdeInicio(fecha) {
-        const ahora = new Date();
-        const diferencia = ahora - new Date(fecha);
-        return Math.floor(diferencia / (1000 * 60 * 60 * 24));
-    }
+    const guardar = () => {
+        localStorage.setItem('progresos', JSON.stringify(progresos));
+        localStorage.setItem('objetivos', JSON.stringify(objetivos));
+        localStorage.setItem('ultimos', JSON.stringify(ultimos));
+        localStorage.setItem('semanaInicio', semanaInicio);
+    };
 
-    function incrementarBarra(botonId) {
-        const hoy = new Date().toDateString(); // Obtener la fecha de hoy
-        if (ultimosClics[botonId - 1] === hoy) { // Comprobar si el botón ya fue presionado hoy
-            alert("Ya has presionado este botón hoy.");
+    const actualizarBarras = () => {
+        let suma = 0;
+        for (let i = 0; i < HABITOS; i++) {
+            const porcentaje = Math.min(1, progresos[i] / objetivos[i]);
+            const barra = document.getElementById(`progreso${i+1}`);
+            if (barra) barra.style.width = `${porcentaje * 100}%`;
+            const boton = document.getElementById(`boton${i+1}`);
+            if (boton) boton.innerText = `${progresos[i]}/${objetivos[i]}`;
+            suma += porcentaje;
+        }
+        const promedio = suma / HABITOS;
+        const barraGeneral = document.getElementById('barraEstado');
+        barraGeneral.style.width = `${promedio*100}%`;
+        barraGeneral.style.backgroundColor = `hsl(${(1-promedio)*240},100%,50%)`;
+        const fechaTexto = new Date().toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        document.getElementById('dia-actual').innerText = fechaTexto;
+    };
+
+    window.incrementarBarra = (id) => {
+        const hoy = new Date().toLocaleDateString();
+        if (ultimos[id-1] === hoy) {
+            alert('Ya has registrado este hábito hoy.');
             return;
         }
+        progresos[id-1]++;
+        ultimos[id-1] = hoy;
+        guardar();
+        actualizarBarras();
+    };
 
-        if (pulsosPorBoton[botonId - 1] < MAX_PULSOS_POR_BOTON) {
-            pulsosPorBoton[botonId - 1]++;
-            pulsosTotales = pulsosPorBoton.reduce((a, b) => a + b, 0);
-            ultimosClics[botonId - 1] = hoy; // Actualizar la fecha del último clic para este botón
-            actualizarBarra();
-            guardarEstado();
-            mostrarMensajeMuyBien(); // Mostrar mensaje "Muy bien hecho"
-            if (pulsosTotales >= TOTAL_PULSOS) {
-                mostrarMensajeFelicitaciones();
-            }
+    window.resetearBarra = () => {
+        progresos = Array(HABITOS).fill(0);
+        ultimos = Array(HABITOS).fill(null);
+        guardar();
+        actualizarBarras();
+    };
+
+    window.resetearDiaInicio = () => {
+        semanaInicio = obtenerSemana(new Date());
+        progresos = Array(HABITOS).fill(0);
+        ultimos = Array(HABITOS).fill(null);
+        guardar();
+        actualizarBarras();
+    };
+
+    window.toggleConfig = () => {
+        const menu = document.getElementById('configMenu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        for (let i = 0; i < HABITOS; i++) {
+            const input = document.getElementById(`objetivo${i+1}`);
+            input.value = objetivos[i];
         }
-    }
-    
-    function actualizarBarra() {
-        let progreso = (pulsosTotales / TOTAL_PULSOS) * 100;
-        let color;
-        
-        if (progreso <= 33) {
-            color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
-        } else if (progreso <= 66) {
-            color = `linear-gradient(to right, red 33%, yellow ${(progreso - 33) * 3}%, transparent ${progreso}%)`;
-        } else {
-            color = `linear-gradient(to right, red 33%, yellow 66%, green ${(progreso - 66) * 1.5}%, transparent ${progreso}%)`;
+    };
+
+    window.guardarObjetivos = () => {
+        for (let i = 0; i < HABITOS; i++) {
+            const val = parseInt(document.getElementById(`objetivo${i+1}`).value, 10);
+            if (!isNaN(val) && val > 0) objetivos[i] = val;
         }
+        guardar();
+        document.getElementById('configMenu').style.display = 'none';
+        actualizarBarras();
+    };
 
-        document.getElementById('barraEstado').style.width = progreso + '%';
-        document.getElementById('barraEstado').style.background = color;
-        document.getElementById('dia-actual').innerText = `Día ${diaActual + 1} de 30`;
-    }
-
-    function guardarEstado() {
-        localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
-        localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics)); // Guardar ultimosClics en localStorage
-        localStorage.setItem('fechaInicio', fechaInicio.toISOString()); // Asegurar que la fecha de inicio esté guardada en el formato correcto
-    }
-
-    function resetearBarra() {
-        pulsosPorBoton = [0, 0, 0, 0, 0, 0];
-        pulsosTotales = 0;
-        ultimosClics = [null, null, null, null, null, null]; // Restablecer ultimosClics
-        localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
-        localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics)); // Guardar ultimosClics en localStorage
-        actualizarBarra();
-        document.getElementById('mensaje-felicitaciones').style.display = 'none';
-    }
-
-    function resetearDiaInicio() {
-        fechaInicio = new Date();
-        localStorage.setItem('fechaInicio', fechaInicio.toISOString());
-        resetearBarra();
-        diaActual = 0;
-        document.getElementById('dia-actual').innerText = `Día ${diaActual + 1} de 30`;
-    }
-
-    function reiniciarProgreso() {
-        fechaInicio = new Date();
-        localStorage.setItem('fechaInicio', fechaInicio.toISOString());
-        pulsosPorBoton = [0, 0, 0, 0, 0, 0];
-        ultimosClics = [null, null, null, null, null, null];
-        localStorage.setItem('pulsosPorBoton', JSON.stringify(pulsosPorBoton));
-        localStorage.setItem('ultimosClics', JSON.stringify(ultimosClics));
-        diaActual = 0;
-    }
-
-    function mostrarMensajeFelicitaciones() {
-        document.getElementById('mensaje-felicitaciones').style.display = 'block';
-    }
-
-    function mostrarMensajeMuyBien() {
-        const mensaje = document.getElementById('mensaje-muy-bien');
-        mensaje.style.display = 'block';
-        setTimeout(() => mensaje.style.display = 'none', 2000); // Ocultar el mensaje después de 2 segundos
-    }
-
-    window.incrementarBarra = incrementarBarra; // Exponer la función al ámbito global para que se pueda llamar desde el HTML
-    window.resetearBarra = resetearBarra; // Exponer la función al ámbito global para que se pueda llamar desde el HTML
-    window.resetearDiaInicio = resetearDiaInicio; // Exponer la función al ámbito global para que se pueda llamar desde el HTML
-
-    // Inicializa la barra con el estado guardado
-    pulsosTotales = pulsosPorBoton.reduce((a, b) => a + b, 0);
-    actualizarBarra();
+    actualizarBarras();
 });
-//   if (progreso <= 33) {
- //   color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
-//} else if (progreso <= 66) {
- //   color = `linear-gradient(to right, red 33%, yellow ${progreso}%, transparent ${progreso}%)`;
-//} else {
- //   color = `linear-gradient(to right, red 33%, yellow 66%, green ${progreso}%, transparent ${progreso}%)`;
-//}//
