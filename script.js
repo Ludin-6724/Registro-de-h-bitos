@@ -1,24 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const HABITOS = 6;
     let data = JSON.parse(localStorage.getItem('habitData')) || {
         users: [{
             name: 'Usuario 1',
-            objetivos: Array(HABITOS).fill(7),
-            progresos: Array(HABITOS).fill(0),
-            ultimos: Array(HABITOS).fill(null),
             startDay: 1,
-            semanaInicio: null
+            semanaInicio: null,
+            habitos: [
+                { nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null }
+            ]
         }]
     };
     let currentUser = 0;
+    let editHabitos = [];
 
     const obtenerSemana = (fecha, startDay) => {
         const f = new Date(fecha);
         const dia = f.getDay();
         const diff = f.getDate() - ((dia - startDay + 7) % 7);
         f.setDate(diff);
-        f.setHours(0, 0, 0, 0);
-        return f.toISOString().slice(0, 10);
+        f.setHours(0,0,0,0);
+        return f.toISOString().slice(0,10);
     };
 
     const guardarDatos = () => {
@@ -30,23 +30,29 @@ document.addEventListener('DOMContentLoaded', () => {
         data.users.forEach(user => {
             const semanaAct = obtenerSemana(hoy, user.startDay);
             if (user.semanaInicio !== semanaAct) {
-                user.progresos = Array(HABITOS).fill(0);
-                user.ultimos = Array(HABITOS).fill(null);
+                user.habitos.forEach(h => { h.progreso = 0; h.ultimo = null; });
                 user.semanaInicio = semanaAct;
             }
         });
         guardarDatos();
     };
 
-    const createHabitosHTML = (uIndex) => {
-        let html = '';
-        for (let i = 0; i < HABITOS; i++) {
-            html += `<div class="caja">
-                <button id="boton-${uIndex}-${i}" onclick="incrementarBarra(${uIndex},${i})">0</button>
-                <div class="barra-habito"><div class="progreso-habito" id="progreso-${uIndex}-${i}"></div></div>
-            </div>`;
-        }
-        return html;
+    const mostrarFelicidades = () => {
+        const div = document.createElement('div');
+        div.className = 'mensaje-felicidades';
+        div.textContent = '¡Felicitaciones!';
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 2000);
+    };
+
+    const createHabitosHTML = (uIdx) => {
+        const user = data.users[uIdx];
+        return user.habitos.map((h, i) => `
+            <div class="caja">
+                <span class="nombre-habito">${h.nombre}</span>
+                <button id="boton-${uIdx}-${i}" onclick="incrementarBarra(${uIdx},${i})">0</button>
+                <div class="barra-habito"><div class="progreso-habito" id="progreso-${uIdx}-${i}"></div></div>
+            </div>`).join('');
     };
 
     const renderUsuarios = () => {
@@ -70,21 +76,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const actualizarUsuario = (idx) => {
         const user = data.users[idx];
         let suma = 0;
-        for (let i = 0; i < HABITOS; i++) {
-            const porc = Math.min(1, user.progresos[i] / user.objetivos[i]);
+        user.habitos.forEach((h, i) => {
+            const porc = Math.min(1, h.progreso / h.objetivo);
             const barra = document.getElementById(`progreso-${idx}-${i}`);
             if (barra) barra.style.width = `${porc * 100}%`;
             const boton = document.getElementById(`boton-${idx}-${i}`);
-            if (boton) boton.innerText = `${user.progresos[i]}/${user.objetivos[i]}`;
+            if (boton) boton.innerText = `${h.progreso}/${h.objetivo}`;
             suma += porc;
-        }
-        const promedio = suma / HABITOS;
+        });
+        const promedio = user.habitos.length ? suma / user.habitos.length : 0;
         const barraGeneral = document.getElementById(`barraEstado-${idx}`);
         if (barraGeneral) {
             barraGeneral.style.width = `${promedio * 100}%`;
             barraGeneral.style.backgroundColor = `hsl(${(1 - promedio) * 240},100%,50%)`;
         }
-        document.getElementById('dia-actual').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('dia-actual').innerText = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
     };
 
     const actualizarTodas = () => data.users.forEach((_, i) => actualizarUsuario(i));
@@ -92,39 +100,66 @@ document.addEventListener('DOMContentLoaded', () => {
     window.incrementarBarra = (uIdx, hIdx) => {
         const hoy = new Date().toLocaleDateString();
         const user = data.users[uIdx];
-        if (user.ultimos[hIdx] === hoy) {
+        const hab = user.habitos[hIdx];
+        if (hab.ultimo === hoy) {
             alert('Ya registrado hoy');
             return;
         }
-        user.progresos[hIdx]++;
-        user.ultimos[hIdx] = hoy;
+        hab.progreso++;
+        hab.ultimo = hoy;
         guardarDatos();
         actualizarUsuario(uIdx);
+        mostrarFelicidades();
+    };
+
+    const renderConfig = () => {
+        const cont = document.getElementById('habitosConfig');
+        cont.innerHTML = '';
+        editHabitos.forEach((h, i) => {
+            const div = document.createElement('div');
+            div.innerHTML = `Nombre: <input id="habNombre-${i}" value="${h.nombre}">
+                Objetivo: <input type="number" id="habObjetivo-${i}" value="${h.objetivo}" min="1">
+                <button onclick="removeHabitoConfig(${i})">X</button>`;
+            cont.appendChild(div);
+        });
     };
 
     window.openConfig = (uIdx) => {
         currentUser = uIdx;
         const user = data.users[uIdx];
+        editHabitos = user.habitos.map(h => ({...h}));
         const menu = document.getElementById('configMenu');
         menu.style.display = 'block';
-        document.getElementById('configTitulo').innerText = `Configurar ${user.name}`;
-        for (let i = 0; i < HABITOS; i++) {
-            document.getElementById(`objetivo${i + 1}`).value = user.objetivos[i];
-        }
+        document.getElementById('configTitulo').innerText = `Configurar usuario`;
+        document.getElementById('userNameInput').value = user.name;
         document.getElementById('startDaySelect').value = user.startDay;
+        renderConfig();
+    };
+
+    window.addHabitoConfig = () => {
+        editHabitos.push({ nombre: 'Nuevo Hábito', objetivo: 7, progreso: 0, ultimo: null });
+        renderConfig();
+    };
+
+    window.removeHabitoConfig = (idx) => {
+        editHabitos.splice(idx, 1);
+        renderConfig();
     };
 
     window.guardarObjetivos = () => {
         const user = data.users[currentUser];
-        for (let i = 0; i < HABITOS; i++) {
-            const val = parseInt(document.getElementById(`objetivo${i + 1}`).value, 10);
-            if (!isNaN(val) && val > 0) user.objetivos[i] = val;
-        }
+        user.name = document.getElementById('userNameInput').value || user.name;
         user.startDay = parseInt(document.getElementById('startDaySelect').value, 10);
+        editHabitos.forEach((h, i) => {
+            h.nombre = document.getElementById(`habNombre-${i}`).value || `Hábito ${i+1}`;
+            const val = parseInt(document.getElementById(`habObjetivo-${i}`).value, 10);
+            if (!isNaN(val) && val > 0) h.objetivo = val;
+        });
+        user.habitos = editHabitos;
         guardarDatos();
         document.getElementById('configMenu').style.display = 'none';
         resetIfNewWeek();
-        actualizarUsuario(currentUser);
+        renderUsuarios();
     };
 
     window.showAddUser = () => {
@@ -136,11 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nombre) {
             data.users.push({
                 name: nombre,
-                objetivos: Array(HABITOS).fill(7),
-                progresos: Array(HABITOS).fill(0),
-                ultimos: Array(HABITOS).fill(null),
                 startDay: 1,
-                semanaInicio: null
+                semanaInicio: null,
+                habitos: [ { nombre: 'Hábito 1', objetivo: 7, progreso: 0, ultimo: null } ]
             });
             document.getElementById('nuevoUsuario').value = '';
             document.getElementById('addUserMenu').style.display = 'none';

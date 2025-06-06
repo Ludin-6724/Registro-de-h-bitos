@@ -20,6 +20,7 @@
         <div id="usuarios"></div>
         <div id="configMenu" class="config-menu" style="display:none;">
             <h3 id="configTitulo"></h3>
+            Nombre: <input id="userNameInput" type="text">
             <label>Inicio de semana:
                 <select id="startDaySelect">
                     <option value="1">Lunes</option>
@@ -31,12 +32,8 @@
                     <option value="0">Domingo</option>
                 </select>
             </label>
-            <div>Hábito 1: <input type="number" id="objetivo1" min="1"></div>
-            <div>Hábito 2: <input type="number" id="objetivo2" min="1"></div>
-            <div>Hábito 3: <input type="number" id="objetivo3" min="1"></div>
-            <div>Hábito 4: <input type="number" id="objetivo4" min="1"></div>
-            <div>Hábito 5: <input type="number" id="objetivo5" min="1"></div>
-            <div>Hábito 6: <input type="number" id="objetivo6" min="1"></div>
+            <div id="habitosConfig"></div>
+            <button onclick="addHabitoConfig()">Agregar hábito</button>
             <button onclick="guardarObjetivos()">Guardar</button>
         </div>
     </main>

@@ -1,6 +1,9 @@
-# Registro-de-h-bitos
-un registro de hábitos único 
+# Registro-de-hábitos
+Un registro de hábitos sencillo y local.
 
-Este proyecto registra hasta seis hábitos diarios por usuario. Cada hábito posee una barra de avance individual y se pueden definir objetivos semanales y el día de inicio de la semana.
+Cada usuario puede crear tantos hábitos como desee y asignarles un nombre y un
+objetivo semanal. Los datos se guardan en `localStorage` y se reinician de forma
+automática al iniciar una nueva semana según el día elegido por cada usuario.
 
-Ahora es posible crear varios usuarios para competir entre sí. Cada usuario cuenta con su propia barra de progreso general. Se almacenan los datos en el navegador mediante `localStorage`.
+Es posible agregar varios usuarios para competir. Cada uno cuenta con su propia
+barra general que promedia el avance de todos sus hábitos.
