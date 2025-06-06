@@ -146,3 +146,31 @@ header {
     background: rgba(0,0,0,0.4);
     z-index: 5;
 }
+
+@media (max-width:600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    #layout {
+        flex-direction: column;
+    }
+    #users, #competition {
+        padding: 10px;
+    }
+    #competition {
+        border-left: none;
+        border-top: 1px solid #ddd;
+    }
+    .habit {
+        flex-wrap: wrap;
+    }
+    .modal {
+        width: 90%;
+    }
+}
