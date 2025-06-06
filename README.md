@@ -1,9 +1,11 @@
-# Registro-de-hábitos
-Un registro de hábitos sencillo y local.
+# Registro de hábitos
 
-Cada usuario puede crear tantos hábitos como desee y asignarles un nombre y un
-objetivo semanal. Los datos se guardan en `localStorage` y se reinician de forma
-automática al iniciar una nueva semana según el día elegido por cada usuario.
+Esta aplicación permite registrar hábitos de manera local usando el navegador. Cada usuario puede crear su propia lista de hábitos, marcar el avance diario y ver una barra de progreso general.
 
-Es posible agregar varios usuarios para competir. Cada uno cuenta con su propia
-barra general que promedia el avance de todos sus hábitos.
+## Uso
+1. Pulsa **Agregar usuario** y escribe el nombre.
+2. Para cada usuario puedes añadir hábitos con su objetivo semanal.
+3. Al pulsar el botón de cada hábito se incrementa el progreso de la semana.
+4. La barra principal cambia de color: rojo cuando el avance es bueno y azul cuando falta cumplir los objetivos.
+
+Los datos se guardan en `localStorage` y se reinician al comenzar una nueva semana según la hora local del dispositivo.

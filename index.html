@@ -8,38 +8,25 @@
 </head>
 <body>
     <header>
-        <h1>REGISTRADOR DE HÁBITOS</h1>
+        <h1>Registro de Hábitos</h1>
+        <button id="addUserBtn">Agregar usuario</button>
     </header>
-    <main>
-        <div id="dia-actual"></div>
-        <button class="boton-accion" onclick="showAddUser()">Agregar usuario</button>
-        <div id="addUserMenu" class="config-menu" style="display:none;">
-            Nombre: <input type="text" id="nuevoUsuario">
-            <button onclick="agregarUsuario()">Crear</button>
-        </div>
-        <div id="usuarios"></div>
-        <div id="configMenu" class="config-menu" style="display:none;">
-            <h3 id="configTitulo"></h3>
-            Nombre: <input id="userNameInput" type="text">
-            <label>Inicio de semana:
-                <select id="startDaySelect">
-                    <option value="1">Lunes</option>
-                    <option value="2">Martes</option>
-                    <option value="3">Miércoles</option>
-                    <option value="4">Jueves</option>
-                    <option value="5">Viernes</option>
-                    <option value="6">Sábado</option>
-                    <option value="0">Domingo</option>
-                </select>
-            </label>
-            <div id="habitosConfig"></div>
-            <button onclick="addHabitoConfig()">Agregar hábito</button>
-            <button onclick="guardarObjetivos()">Guardar</button>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2024 Ludin Guerra</p>
-    </footer>
+
+    <div id="userForm" class="modal hidden">
+        <h2>Nuevo usuario</h2>
+        <input type="text" id="userName" placeholder="Nombre del usuario">
+        <button id="createUserBtn">Crear</button>
+    </div>
+
+    <div id="habitForm" class="modal hidden">
+        <h2>Nuevo hábito</h2>
+        <input type="text" id="habitName" placeholder="Nombre del hábito">
+        <input type="number" id="habitGoal" min="1" value="7" placeholder="Objetivo semanal">
+        <button id="saveHabitBtn">Guardar</button>
+    </div>
+
+    <div id="users"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
