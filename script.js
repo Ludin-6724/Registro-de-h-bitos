@@ -91,8 +91,15 @@
             addBtn.textContent = '+ Hábito';
             addBtn.className = 'addHabitBtn';
             addBtn.dataset.user = uIdx;
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Eliminar';
+            delBtn.className = 'removeUserBtn';
+            delBtn.dataset.user = uIdx;
+
             header.appendChild(title);
             header.appendChild(addBtn);
+            header.appendChild(delBtn);
             uDiv.appendChild(header);
 
             const bar = document.createElement('div');
@@ -121,6 +128,9 @@
 
                 const nameSpan = document.createElement('span');
                 nameSpan.textContent = h.name;
+
+                const barWrap = document.createElement('div');
+                barWrap.className = 'bar-wrap';
 
                 const bar = document.createElement('div');
                 bar.className = 'progress-bar';
@@ -152,10 +162,12 @@
                 remBtn.dataset.user = uIdx;
                 remBtn.dataset.habit = hIdx;
 
+                barWrap.appendChild(bar);
+                barWrap.appendChild(weekDiv);
+
                 row.appendChild(logBtn);
                 row.appendChild(nameSpan);
-                row.appendChild(bar);
-                row.appendChild(weekDiv);
+                row.appendChild(barWrap);
                 row.appendChild(txt);
                 row.appendChild(remBtn);
                 habitList.appendChild(row);
@@ -185,6 +197,13 @@
 
     function addUser(name){
         data.users.push({ name: name, habits: [] });
+        save();
+        render();
+        updateToday();
+    }
+
+    function removeUser(index){
+        data.users.splice(index,1);
         save();
         render();
         updateToday();
@@ -267,6 +286,9 @@
                 const u = parseInt(e.target.dataset.user,10);
                 const h = parseInt(e.target.dataset.habit,10);
                 removeHabit(u,h);
+            }else if(e.target.classList.contains('removeUserBtn')){
+                const u = parseInt(e.target.dataset.user,10);
+                removeUser(u);
             }
         });
     });
