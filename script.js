@@ -112,6 +112,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializa la barra con el estado guardado
     pulsosTotales = pulsosPorBoton.reduce((a, b) => a + b, 0);
     actualizarBarra();
+
+    /* === Diario === */
+    let fechaSeleccionada = '';
+
+    function generarCalendario() {
+        const contenedor = document.getElementById('calendario');
+        const hoy = new Date();
+        const anio = hoy.getFullYear();
+        const mes = hoy.getMonth();
+        const primerDia = new Date(anio, mes, 1).getDay();
+        const numDias = new Date(anio, mes + 1, 0).getDate();
+        contenedor.innerHTML = '';
+        const tabla = document.createElement('table');
+        const header = document.createElement('tr');
+        const diasSemana = ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
+        diasSemana.forEach(d => {
+            const th = document.createElement('th');
+            th.textContent = d;
+            header.appendChild(th);
+        });
+        tabla.appendChild(header);
+
+        let fila = document.createElement('tr');
+        for (let i=0; i<primerDia; i++) {
+            fila.appendChild(document.createElement('td'));
+        }
+        for (let dia=1; dia<=numDias; dia++) {
+            if ((primerDia + dia - 1) % 7 === 0) {
+                tabla.appendChild(fila);
+                fila = document.createElement('tr');
+            }
+            const td = document.createElement('td');
+            td.textContent = dia;
+            td.className = 'dia-calendario';
+            td.addEventListener('click', () => abrirModal(anio, mes, dia));
+            fila.appendChild(td);
+        }
+        tabla.appendChild(fila);
+        contenedor.appendChild(tabla);
+    }
+
+    function abrirModal(a, m, d) {
+        fechaSeleccionada = `${a}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        document.getElementById('modalFecha').textContent = fechaSeleccionada;
+        document.getElementById('diarioTexto').value = localStorage.getItem('diario-'+fechaSeleccionada) || '';
+        document.getElementById('diarioModal').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        document.getElementById('diarioModal').style.display = 'none';
+    }
+
+    function guardarDiario() {
+        const texto = document.getElementById('diarioTexto').value;
+        localStorage.setItem('diario-'+fechaSeleccionada, texto);
+        const blob = new Blob([texto], {type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `diario-${fechaSeleccionada}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        cerrarModal();
+    }
+
+    document.getElementById('guardarDiario').addEventListener('click', guardarDiario);
+    document.getElementById('cancelarDiario').addEventListener('click', cerrarModal);
+
+    generarCalendario();
 });
 //   if (progreso <= 33) {
  //   color = `linear-gradient(to right, red ${progreso}%, transparent ${progreso}%)`;
