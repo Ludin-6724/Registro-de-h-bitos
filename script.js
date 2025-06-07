@@ -2,6 +2,7 @@
     const USER_KEY = 'habitTrackerData';
     let data = { users: [], lastReset: startOfWeek() };
     let currentUser = null; // for adding habits
+    let currentNoteDate = null;
 
     function startOfWeek(){
         const d = new Date();
@@ -233,6 +234,37 @@
         render();
     }
 
+    function openJournal(date){
+        currentNoteDate = date;
+        const modal = document.getElementById('journalModal');
+        const ta = document.getElementById('journalText');
+        ta.value = localStorage.getItem('note-'+date) || '';
+        modal.classList.remove('hidden');
+    }
+
+    function closeJournal(){
+        const modal = document.getElementById('journalModal');
+        const ta = document.getElementById('journalText');
+        if(currentNoteDate){
+            localStorage.setItem('note-'+currentNoteDate, ta.value);
+        }
+        modal.classList.add('hidden');
+    }
+
+    function downloadJournal(){
+        const ta = document.getElementById('journalText');
+        if(!currentNoteDate) return;
+        const blob = new Blob([ta.value], {type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nota-${currentNoteDate}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     function updateToday(){
         const el = document.getElementById('today');
         if(el){
@@ -248,6 +280,13 @@
         render();
         updateToday();
         setInterval(updateToday, 60000);
+
+        document.getElementById('today').addEventListener('click',()=>{
+            openJournal(startOfDay());
+        });
+
+        document.getElementById('closeJournalBtn').addEventListener('click',closeJournal);
+        document.getElementById('downloadNoteBtn').addEventListener('click',downloadJournal);
 
         document.getElementById('addUserBtn').addEventListener('click',()=>{
             document.getElementById('userForm').classList.remove('hidden');
