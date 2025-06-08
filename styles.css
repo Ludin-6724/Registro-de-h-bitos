@@ -65,6 +65,32 @@ header {
     padding: 10px;
 }
 
+#phraseBox {
+    margin-top: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#phraseList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#phraseList li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+#phraseList .deletePhraseBtn {
+    margin-left: auto;
+    padding: 0 6px;
+}
+
 #weeklyTasks {
     list-style: none;
     padding: 0;
@@ -253,6 +279,25 @@ header {
     padding: 10px;
     box-sizing: border-box;
     font-size: 16px;
+}
+
+#journalPhrase {
+    width: 100%;
+    margin-top: 10px;
+    padding: 6px;
+    box-sizing: border-box;
+    background: #222;
+    color: #fff;
+    border: none;
+}
+
+#deletePhraseBtn {
+    align-self: flex-start;
+    margin-top: 5px;
+    background: #444;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
 }
 
 #checkList {

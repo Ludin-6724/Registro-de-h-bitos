@@ -14,5 +14,6 @@ Esta aplicación permite registrar hábitos de manera local usando el navegador.
 9. Puedes eliminar usuarios con el botón **Eliminar usuario** situado bajo su lista de hábitos. Al presionarlo deberás ingresar la contraseña `1234`.
 10. La interfaz se adapta a dispositivos móviles para que sea sencillo registrar hábitos desde el teléfono.
 11. Las barras de cada hábito se reinician al comenzar una nueva semana y la barra general vuelve a calcular el promedio con los valores actualizados.
+12. Cada nota del diario incluye un campo para escribir "en una frase lo que Dios me está hablando". Esa frase se muestra en un recuadro bajo el calendario y puede eliminarse tanto desde el diario como desde esa lista.
 
 Los datos se guardan en `localStorage` y se reinician al comenzar una nueva semana según la hora local del dispositivo.

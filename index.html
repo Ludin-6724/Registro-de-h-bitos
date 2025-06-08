@@ -31,6 +31,8 @@
     <div id="journalModal" class="modal hidden fullscreen dark">
         <div id="journalContent">
             <textarea id="journalText" placeholder="Escribe tu nota..."></textarea>
+            <input type="text" id="journalPhrase" placeholder="En una frase lo que Dios me está hablando">
+            <button id="deletePhraseBtn">Borrar frase</button>
             <ul id="checkList"></ul>
             <button id="addCheckBtn">Agregar tarea</button>
             <div class="journal-actions">
@@ -49,6 +51,10 @@
             <div id="taskBox">
                 <h3>Tareas semanales</h3>
                 <ul id="weeklyTasks"></ul>
+            </div>
+            <div id="phraseBox">
+                <h3>Frases</h3>
+                <ul id="phraseList"></ul>
             </div>
         </aside>
     </div>

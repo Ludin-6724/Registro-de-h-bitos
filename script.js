@@ -1,8 +1,10 @@
 (function(){
     const USER_KEY = 'habitTrackerData';
     const TASK_KEY = 'weeklyTasks';
+    const PHRASE_KEY = 'phraseData';
     let data = { users: [], lastReset: startOfWeek() };
     let tasks = { start: startOfWeek(), items: [] };
+    let phrases = { items: [] };
     let currentUser = null; // for adding habits
     let currentNoteDate = null;
 
@@ -67,6 +69,39 @@
 
     function saveTasks(){
         localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
+    }
+
+    function loadPhrases(){
+        try {
+            const raw = localStorage.getItem(PHRASE_KEY);
+            const parsed = JSON.parse(raw);
+            if(parsed && Array.isArray(parsed.items)){
+                phrases = parsed;
+            }
+        } catch(e){ /* ignore */ }
+    }
+
+    function savePhrases(){
+        localStorage.setItem(PHRASE_KEY, JSON.stringify(phrases));
+    }
+
+    function renderPhrases(){
+        const list = document.getElementById('phraseList');
+        if(!list) return;
+        list.innerHTML = '';
+        phrases.items.forEach((p,i)=>{
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            const d = new Date(p.date);
+            span.textContent = `${d.getDate()}/${d.getMonth()+1}: ${p.text}`;
+            const del = document.createElement('button');
+            del.textContent = 'X';
+            del.className = 'deletePhraseBtn';
+            del.dataset.idx = i;
+            li.appendChild(span);
+            li.appendChild(del);
+            list.appendChild(li);
+        });
     }
 
     function checkTaskWeek(){
@@ -348,18 +383,21 @@
 
     function loadJournal(date){
         const raw = localStorage.getItem('note-'+date);
-        if(!raw) return { text:'', checks:[] };
+        if(!raw) return { text:'', checks:[], phrase:'' };
         try {
-            return JSON.parse(raw);
+            const obj = JSON.parse(raw);
+            if(!('phrase' in obj)) obj.phrase = '';
+            return obj;
         } catch(e){
-            return { text:raw, checks:[] };
+            return { text:raw, checks:[], phrase:'' };
         }
     }
 
     function saveJournal(){
         if(!currentNoteDate) return;
-        const obj = { text:'', checks:[] };
+        const obj = { text:'', checks:[], phrase:'' };
         obj.text = document.getElementById('journalText').value;
+        obj.phrase = document.getElementById('journalPhrase').value.trim();
         document.querySelectorAll('#checkList li').forEach(li=>{
             obj.checks.push({
                 text: li.querySelector('.check-text').value,
@@ -372,8 +410,16 @@
             );
         });
         localStorage.setItem('note-'+currentNoteDate, JSON.stringify(obj));
+        const idx = phrases.items.findIndex(p=>p.date===currentNoteDate);
+        if(obj.phrase){
+            if(idx>=0) phrases.items[idx].text = obj.phrase; else phrases.items.push({text:obj.phrase,date:currentNoteDate});
+        }else if(idx>=0){
+            phrases.items.splice(idx,1);
+        }
+        savePhrases();
         saveTasks();
         renderWeeklyTasks();
+        renderPhrases();
     }
 
     function openJournal(date){
@@ -381,6 +427,7 @@
         const modal = document.getElementById('journalModal');
         const data = loadJournal(date);
         document.getElementById('journalText').value = data.text;
+        document.getElementById('journalPhrase').value = data.phrase || '';
         const list = document.getElementById('checkList');
         list.innerHTML = '';
         data.checks.forEach(c=>addCheckItem(c.text,c.done));
@@ -425,10 +472,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         load();
         loadTasks();
+        loadPhrases();
         resetWeekIfNeeded();
         render();
         renderCalendar();
         renderWeeklyTasks();
+        renderPhrases();
         updateToday();
         setInterval(()=>{ updateToday(); renderCalendar(); }, 60000);
 
@@ -448,6 +497,9 @@
 
         document.getElementById('closeJournalBtn').addEventListener('click',closeJournal);
         document.getElementById('downloadNoteBtn').addEventListener('click',downloadJournal);
+        document.getElementById('deletePhraseBtn').addEventListener('click',()=>{
+            document.getElementById('journalPhrase').value='';
+        });
 
         document.getElementById('addUserBtn').addEventListener('click',()=>{
             document.getElementById('userForm').classList.remove('hidden');
@@ -521,6 +573,26 @@
                 tasks.items.splice(i,1);
                 saveTasks();
                 renderWeeklyTasks();
+            }
+        });
+        document.getElementById('phraseList').addEventListener('click',e=>{
+            if(e.target.classList.contains('deletePhraseBtn')){
+                const i = parseInt(e.target.dataset.idx,10);
+                const date = phrases.items[i].date;
+                phrases.items.splice(i,1);
+                savePhrases();
+                renderPhrases();
+                // also clear phrase from stored note
+                const raw = localStorage.getItem('note-'+date);
+                if(raw){
+                    try{
+                        const obj = JSON.parse(raw);
+                        obj.phrase='';
+                        localStorage.setItem('note-'+date, JSON.stringify(obj));
+                    }catch(e){
+                        /* ignore */
+                    }
+                }
             }
         });
     });
