@@ -337,8 +337,12 @@
         input.type = 'text';
         input.className = 'check-text';
         input.value = text;
+        const del = document.createElement('button');
+        del.textContent = 'X';
+        del.className = 'deleteCheckBtn';
         li.appendChild(cb);
         li.appendChild(input);
+        li.appendChild(del);
         document.getElementById('checkList').appendChild(li);
     }
 
@@ -434,6 +438,12 @@
 
         document.getElementById('addCheckBtn').addEventListener('click',()=>{
             addCheckItem();
+        });
+
+        document.getElementById('checkList').addEventListener('click',e=>{
+            if(e.target.classList.contains('deleteCheckBtn')){
+                e.target.parentElement.remove();
+            }
         });
 
         document.getElementById('closeJournalBtn').addEventListener('click',closeJournal);
