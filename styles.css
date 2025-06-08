@@ -135,6 +135,11 @@ header {
     position: relative;
 }
 
+/* add spacing between the main progress bar and habit list */
+.user > .progress-bar {
+    margin-bottom: 15px;
+}
+
 .progress-fill {
     background: #e74c3c;
     height: 100%;
