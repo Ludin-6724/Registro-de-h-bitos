@@ -57,6 +57,9 @@
             const parsed = JSON.parse(raw);
             if(parsed && Array.isArray(parsed.items)){
                 tasks = parsed;
+                tasks.items.forEach(t => {
+                    if(!t.date) t.date = startOfDay();
+                });
             }
         } catch(e){ /* ignore */ }
         checkTaskWeek();
@@ -75,14 +78,9 @@
         }
     }
 
-    function addWeeklyTask(text, done){
+    function addWeeklyTask(text, done, date){
         if(!text.trim()) return;
-        let t = tasks.items.find(x => x.text === text);
-        if(t){
-            t.done = done;
-        }else{
-            tasks.items.push({ text, done: !!done });
-        }
+        tasks.items.push({ text, done: !!done, date });
     }
 
     function renderWeeklyTasks(){
@@ -96,9 +94,15 @@
             cb.checked = t.done;
             cb.dataset.idx = i;
             const span = document.createElement('span');
-            span.textContent = t.text;
+            const d = new Date(t.date);
+            span.textContent = `${d.getDate()}/${d.getMonth()+1}: ${t.text}`;
+            const del = document.createElement('button');
+            del.textContent = 'X';
+            del.className = 'deleteTaskBtn';
+            del.dataset.idx = i;
             li.appendChild(cb);
             li.appendChild(span);
+            li.appendChild(del);
             list.appendChild(li);
         });
     }
@@ -357,8 +361,11 @@
                 text: li.querySelector('.check-text').value,
                 done: li.querySelector('.check-done').checked
             });
-            addWeeklyTask(li.querySelector('.check-text').value,
-                          li.querySelector('.check-done').checked);
+            addWeeklyTask(
+                li.querySelector('.check-text').value,
+                li.querySelector('.check-done').checked,
+                currentNoteDate
+            );
         });
         localStorage.setItem('note-'+currentNoteDate, JSON.stringify(obj));
         saveTasks();
@@ -496,6 +503,14 @@
                 const i = parseInt(e.target.dataset.idx,10);
                 tasks.items[i].done = e.target.checked;
                 saveTasks();
+            }
+        });
+        document.getElementById('weeklyTasks').addEventListener('click',e=>{
+            if(e.target.classList.contains('deleteTaskBtn')){
+                const i = parseInt(e.target.dataset.idx,10);
+                tasks.items.splice(i,1);
+                saveTasks();
+                renderWeeklyTasks();
             }
         });
     });
