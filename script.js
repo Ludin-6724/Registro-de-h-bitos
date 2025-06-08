@@ -234,7 +234,7 @@
             fill.className = 'progress-fill';
             const avg = average(user);
             fill.style.width = (avg*100)+'%';
-            fill.style.background = 'linear-gradient(to right, #3498db, #e74c3c)';
+            fill.style.background = 'linear-gradient(to right, #A0D2EB, #e74c3c)';
             bar.appendChild(fill);
             uDiv.appendChild(bar);
 
@@ -313,7 +313,7 @@
                 pf.className = 'progress-fill';
                 const avg = average(user);
                 pf.style.width = (avg*100)+'%';
-                pf.style.background = 'linear-gradient(to right, #3498db, #e74c3c)';
+                pf.style.background = 'linear-gradient(to right, #A0D2EB, #e74c3c)';
                 pb.appendChild(pf);
                 row.appendChild(label);
                 row.appendChild(pb);
