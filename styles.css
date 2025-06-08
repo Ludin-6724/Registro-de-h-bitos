@@ -58,6 +58,27 @@ header {
     margin-top: 20px;
 }
 
+#taskBox {
+    margin-top: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#weeklyTasks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#weeklyTasks li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -211,13 +232,6 @@ header {
     height: calc(100% - 40px);
 }
 
-#noteTitle {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    font-size: 18px;
-}
 
 #journalText {
     flex: 1;

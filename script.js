@@ -1,6 +1,8 @@
 (function(){
     const USER_KEY = 'habitTrackerData';
+    const TASK_KEY = 'weeklyTasks';
     let data = { users: [], lastReset: startOfWeek() };
+    let tasks = { start: startOfWeek(), items: [] };
     let currentUser = null; // for adding habits
     let currentNoteDate = null;
 
@@ -47,6 +49,58 @@
                 });
             }
         } catch(e){ /* ignore */ }
+    }
+
+    function loadTasks(){
+        try {
+            const raw = localStorage.getItem(TASK_KEY);
+            const parsed = JSON.parse(raw);
+            if(parsed && Array.isArray(parsed.items)){
+                tasks = parsed;
+            }
+        } catch(e){ /* ignore */ }
+        checkTaskWeek();
+    }
+
+    function saveTasks(){
+        localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
+    }
+
+    function checkTaskWeek(){
+        const start = startOfWeek();
+        if(tasks.start !== start){
+            tasks = { start, items: [] };
+            saveTasks();
+            renderWeeklyTasks();
+        }
+    }
+
+    function addWeeklyTask(text, done){
+        if(!text.trim()) return;
+        let t = tasks.items.find(x => x.text === text);
+        if(t){
+            t.done = done;
+        }else{
+            tasks.items.push({ text, done: !!done });
+        }
+    }
+
+    function renderWeeklyTasks(){
+        const list = document.getElementById('weeklyTasks');
+        if(!list) return;
+        list.innerHTML = '';
+        tasks.items.forEach((t,i)=>{
+            const li = document.createElement('li');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = t.done;
+            cb.dataset.idx = i;
+            const span = document.createElement('span');
+            span.textContent = t.text;
+            li.appendChild(cb);
+            li.appendChild(span);
+            list.appendChild(li);
+        });
     }
 
     function save(){
@@ -286,33 +340,35 @@
 
     function loadJournal(date){
         const raw = localStorage.getItem('note-'+date);
-        if(!raw) return {title:'', text:'', checks:[]};
+        if(!raw) return { text:'', checks:[] };
         try {
             return JSON.parse(raw);
         } catch(e){
-            return {title:'', text:raw, checks:[]};
+            return { text:raw, checks:[] };
         }
     }
 
     function saveJournal(){
         if(!currentNoteDate) return;
-        const obj = { title:'', text:'', checks:[] };
-        obj.title = document.getElementById('noteTitle').value;
+        const obj = { text:'', checks:[] };
         obj.text = document.getElementById('journalText').value;
         document.querySelectorAll('#checkList li').forEach(li=>{
             obj.checks.push({
                 text: li.querySelector('.check-text').value,
                 done: li.querySelector('.check-done').checked
             });
+            addWeeklyTask(li.querySelector('.check-text').value,
+                          li.querySelector('.check-done').checked);
         });
         localStorage.setItem('note-'+currentNoteDate, JSON.stringify(obj));
+        saveTasks();
+        renderWeeklyTasks();
     }
 
     function openJournal(date){
         currentNoteDate = date;
         const modal = document.getElementById('journalModal');
         const data = loadJournal(date);
-        document.getElementById('noteTitle').value = data.title;
         document.getElementById('journalText').value = data.text;
         const list = document.getElementById('checkList');
         list.innerHTML = '';
@@ -330,7 +386,7 @@
         if(!currentNoteDate) return;
         saveJournal();
         const data = loadJournal(currentNoteDate);
-        let text = (data.title?data.title+'\n':'') + data.text + '\n';
+        let text = data.text + '\n';
         data.checks.forEach(c=>{
             text += (c.done?'[x] ':'[ ] ') + c.text + '\n';
         });
@@ -352,13 +408,16 @@
             const options = { weekday: 'long', year:'numeric', month:'long', day:'numeric' };
             el.textContent = now.toLocaleDateString(undefined, options);
         }
+        checkTaskWeek();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         load();
+        loadTasks();
         resetWeekIfNeeded();
         render();
         renderCalendar();
+        renderWeeklyTasks();
         updateToday();
         setInterval(()=>{ updateToday(); renderCalendar(); }, 60000);
 
@@ -429,6 +488,14 @@
         document.getElementById('miniCalendar').addEventListener('click',e=>{
             if(e.target.classList.contains('cal-day')){
                 openJournal(e.target.dataset.date);
+            }
+        });
+
+        document.getElementById('weeklyTasks').addEventListener('change',e=>{
+            if(e.target.dataset.idx){
+                const i = parseInt(e.target.dataset.idx,10);
+                tasks.items[i].done = e.target.checked;
+                saveTasks();
             }
         });
     });
