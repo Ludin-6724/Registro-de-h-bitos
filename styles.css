@@ -54,6 +54,36 @@ header {
     flex: 1;
 }
 
+#miniCalendar {
+    margin-top: 20px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-size: 12px;
+}
+
+.calendar-grid span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    height: 20px;
+}
+
+.calendar-grid .cal-label {
+    background: #eee;
+    font-weight: bold;
+}
+
+.calendar-grid .today {
+    background: #3498db;
+    color: #fff;
+}
+
 .user {
     background: #fff;
     margin-bottom: 20px;

@@ -76,6 +76,41 @@
         return user.habits.length ? total / user.habits.length : 0;
     }
 
+    function renderCalendar(){
+        const cal = document.getElementById('miniCalendar');
+        if(!cal) return;
+        cal.innerHTML = '';
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const first = new Date(year, month, 1);
+        const last = new Date(year, month + 1, 0).getDate();
+        const offset = (first.getDay() + 6) % 7; // monday first
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+        const labels = ['L','M','M','J','V','S','D'];
+        labels.forEach(l=>{
+            const h = document.createElement('span');
+            h.className = 'cal-label';
+            h.textContent = l;
+            grid.appendChild(h);
+        });
+        for(let i=0;i<offset;i++){
+            grid.appendChild(document.createElement('span'));
+        }
+        for(let d=1; d<=last; d++){
+            const date = new Date(year, month, d);
+            const cell = document.createElement('span');
+            cell.className = 'cal-day';
+            const ds = date.toISOString();
+            cell.dataset.date = ds;
+            cell.textContent = d;
+            if(d===now.getDate()) cell.classList.add('today');
+            grid.appendChild(cell);
+        }
+        cal.appendChild(grid);
+    }
+
     function render(){
         const container = document.getElementById('users');
         container.innerHTML = '';
@@ -278,8 +313,9 @@
         load();
         resetWeekIfNeeded();
         render();
+        renderCalendar();
         updateToday();
-        setInterval(updateToday, 60000);
+        setInterval(()=>{ updateToday(); renderCalendar(); }, 60000);
 
         document.getElementById('today').addEventListener('click',()=>{
             openJournal(startOfDay());
@@ -338,6 +374,12 @@
                 }
                 const u = parseInt(e.target.dataset.user,10);
                 removeUser(u);
+            }
+        });
+
+        document.getElementById('miniCalendar').addEventListener('click',e=>{
+            if(e.target.classList.contains('cal-day')){
+                openJournal(e.target.dataset.date);
             }
         });
     });
