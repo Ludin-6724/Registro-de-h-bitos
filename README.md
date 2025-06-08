@@ -13,5 +13,6 @@ Esta aplicación permite registrar hábitos de manera local usando el navegador.
 8. Debajo de la barra verde de cada hábito aparecen casillas con los días de la semana para un mejor aspecto en móviles. Al registrar el hábito se coloca un ✓ en la casilla correspondiente y se resalta el día actual.
 9. Puedes eliminar usuarios con el botón **Eliminar usuario** situado bajo su lista de hábitos. Al presionarlo deberás ingresar la contraseña `1234`.
 10. La interfaz se adapta a dispositivos móviles para que sea sencillo registrar hábitos desde el teléfono.
+11. Las barras de cada hábito se reinician al comenzar una nueva semana y la barra general vuelve a calcular el promedio con los valores actualizados.
 
 Los datos se guardan en `localStorage` y se reinician al comenzar una nueva semana según la hora local del dispositivo.
