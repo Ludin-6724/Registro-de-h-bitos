@@ -269,27 +269,72 @@
         render();
     }
 
+    function addCheckItem(text='',done=false){
+        const li = document.createElement('li');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'check-done';
+        cb.checked = done;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'check-text';
+        input.value = text;
+        li.appendChild(cb);
+        li.appendChild(input);
+        document.getElementById('checkList').appendChild(li);
+    }
+
+    function loadJournal(date){
+        const raw = localStorage.getItem('note-'+date);
+        if(!raw) return {title:'', text:'', checks:[]};
+        try {
+            return JSON.parse(raw);
+        } catch(e){
+            return {title:'', text:raw, checks:[]};
+        }
+    }
+
+    function saveJournal(){
+        if(!currentNoteDate) return;
+        const obj = { title:'', text:'', checks:[] };
+        obj.title = document.getElementById('noteTitle').value;
+        obj.text = document.getElementById('journalText').value;
+        document.querySelectorAll('#checkList li').forEach(li=>{
+            obj.checks.push({
+                text: li.querySelector('.check-text').value,
+                done: li.querySelector('.check-done').checked
+            });
+        });
+        localStorage.setItem('note-'+currentNoteDate, JSON.stringify(obj));
+    }
+
     function openJournal(date){
         currentNoteDate = date;
         const modal = document.getElementById('journalModal');
-        const ta = document.getElementById('journalText');
-        ta.value = localStorage.getItem('note-'+date) || '';
+        const data = loadJournal(date);
+        document.getElementById('noteTitle').value = data.title;
+        document.getElementById('journalText').value = data.text;
+        const list = document.getElementById('checkList');
+        list.innerHTML = '';
+        data.checks.forEach(c=>addCheckItem(c.text,c.done));
         modal.classList.remove('hidden');
     }
 
     function closeJournal(){
         const modal = document.getElementById('journalModal');
-        const ta = document.getElementById('journalText');
-        if(currentNoteDate){
-            localStorage.setItem('note-'+currentNoteDate, ta.value);
-        }
+        saveJournal();
         modal.classList.add('hidden');
     }
 
     function downloadJournal(){
-        const ta = document.getElementById('journalText');
         if(!currentNoteDate) return;
-        const blob = new Blob([ta.value], {type:'text/plain'});
+        saveJournal();
+        const data = loadJournal(currentNoteDate);
+        let text = (data.title?data.title+'\n':'') + data.text + '\n';
+        data.checks.forEach(c=>{
+            text += (c.done?'[x] ':'[ ] ') + c.text + '\n';
+        });
+        const blob = new Blob([text], {type:'text/plain'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -319,6 +364,10 @@
 
         document.getElementById('today').addEventListener('click',()=>{
             openJournal(startOfDay());
+        });
+
+        document.getElementById('addCheckBtn').addEventListener('click',()=>{
+            addCheckItem();
         });
 
         document.getElementById('closeJournalBtn').addEventListener('click',closeJournal);

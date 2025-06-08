@@ -29,10 +29,15 @@
     </div>
 
     <div id="journalModal" class="modal hidden fullscreen dark">
-        <textarea id="journalText" placeholder="Escribe tu nota..."></textarea>
-        <div class="journal-actions">
-            <button id="downloadNoteBtn">Guardar nota</button>
-            <button id="closeJournalBtn">Cerrar</button>
+        <div id="journalContent">
+            <input type="text" id="noteTitle" placeholder="Título">
+            <textarea id="journalText" placeholder="Escribe tu nota..."></textarea>
+            <ul id="checkList"></ul>
+            <button id="addCheckBtn">Agregar tarea</button>
+            <div class="journal-actions">
+                <button id="downloadNoteBtn">Guardar nota</button>
+                <button id="closeJournalBtn">Cerrar</button>
+            </div>
         </div>
     </div>
 
