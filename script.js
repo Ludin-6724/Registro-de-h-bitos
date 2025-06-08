@@ -92,8 +92,7 @@
         phrases.items.forEach((p,i)=>{
             const li = document.createElement('li');
             const span = document.createElement('span');
-            const d = new Date(p.date);
-            span.textContent = `${d.getDate()}/${d.getMonth()+1}: ${p.text}`;
+            span.textContent = p.text;
             const del = document.createElement('button');
             del.textContent = 'X';
             del.className = 'deletePhraseBtn';
@@ -129,8 +128,7 @@
             cb.checked = t.done;
             cb.dataset.idx = i;
             const span = document.createElement('span');
-            const d = new Date(t.date);
-            span.textContent = `${d.getDate()}/${d.getMonth()+1}: ${t.text}`;
+            span.textContent = t.text;
             const del = document.createElement('button');
             del.textContent = 'X';
             del.className = 'deleteTaskBtn';
