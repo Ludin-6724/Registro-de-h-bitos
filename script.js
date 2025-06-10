@@ -421,11 +421,17 @@
         const obj = { text:'', checks:[], phrase:'' };
         obj.text = document.getElementById('journalText').value;
         obj.phrase = document.getElementById('journalPhrase').value.trim();
-        document.querySelectorAll('#checkList li').forEach(li=>{
+        const items = document.querySelectorAll('#checkList li');
+        items.forEach(li=>{
             obj.checks.push({
                 text: li.querySelector('.check-text').value,
                 done: li.querySelector('.check-done').checked
             });
+        });
+
+        // replace tasks for this date to avoid duplicates
+        tasks.items = tasks.items.filter(t => t.date !== currentNoteDate);
+        items.forEach(li=>{
             addWeeklyTask(
                 li.querySelector('.check-text').value,
                 li.querySelector('.check-done').checked,
