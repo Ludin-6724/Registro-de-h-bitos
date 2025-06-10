@@ -42,8 +42,14 @@
                 data = parsed;
                 data.users.forEach(u=>{
                     if(!Array.isArray(u.habits)) u.habits = [];
-                    if(typeof u.longTermTotal !== 'number') u.longTermTotal = 0;
-                    if(typeof u.weeks !== 'number') u.weeks = 0;
+                    if(!Array.isArray(u.history)) {
+                        if(typeof u.longTermTotal === 'number' && typeof u.weeks === 'number' && u.weeks>0){
+                            const avg = u.longTermTotal / u.weeks;
+                            u.history = Array(Math.min(u.weeks,4)).fill(avg);
+                        } else {
+                            u.history = [];
+                        }
+                    }
                     u.habits.forEach(h=>{
                         if(typeof h.progress !== 'number') h.progress = 0;
                         if(typeof h.goal !== 'number') h.goal = 1;
@@ -153,10 +159,9 @@
                 // calculate last week's average before clearing
                 const weekAvg = average(u);
                 if(u.habits.length){
-                    if(typeof u.longTermTotal !== 'number') u.longTermTotal = 0;
-                    if(typeof u.weeks !== 'number') u.weeks = 0;
-                    u.longTermTotal += weekAvg;
-                    u.weeks += 1;
+                    if(!Array.isArray(u.history)) u.history = [];
+                    u.history.push(weekAvg);
+                    if(u.history.length > 4) u.history.shift();
                 }
                 u.habits.forEach(h=> {
                     h.progress = 0;
@@ -178,10 +183,13 @@
     }
 
     function overallAverage(user){
-        if(typeof user.longTermTotal !== 'number' || typeof user.weeks !== 'number' || user.weeks === 0){
-            return 0;
-        }
-        return user.longTermTotal / user.weeks;
+        if(!Array.isArray(user.history)) user.history = [];
+        const histSum = user.history.reduce((a,b)=>a+b,0);
+        const histCount = user.history.length;
+        const current = average(user);
+        const total = histSum + current;
+        const count = Math.min(histCount + 1, 4);
+        return count ? total / count : 0;
     }
 
     function renderCalendar(){
@@ -340,7 +348,7 @@
     }
 
     function addUser(name){
-        data.users.push({ name: name, habits: [], longTermTotal: 0, weeks: 0 });
+        data.users.push({ name: name, habits: [], history: [] });
         save();
         render();
         updateToday();
