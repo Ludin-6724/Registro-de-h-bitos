@@ -14,7 +14,7 @@ Esta aplicación permite registrar hábitos de manera local usando el navegador.
 9. Debajo de la barra verde de cada hábito aparecen casillas con los días de la semana para un mejor aspecto en móviles. Al registrar el hábito se coloca un ✓ en la casilla correspondiente y se resalta el día actual.
 10. Puedes eliminar usuarios con el botón **Eliminar usuario** situado bajo su lista de hábitos. Al presionarlo deberás ingresar la contraseña `1234`.
 11. La interfaz se adapta a dispositivos móviles para que sea sencillo registrar hábitos desde el teléfono.
-12. Las barras de cada hábito se reinician al comenzar una nueva semana y la barra general vuelve a calcular el promedio con los valores actualizados.
+12. Al iniciar una nueva semana las barras de cada hábito se reinician. La barra principal conserva un promedio acumulado: cada semana se suma el porcentaje logrado al total para mostrar el progreso a largo plazo sin reiniciarse.
 13. Cada nota del diario incluye un campo para escribir "en una frase lo que Dios me está hablando". Esa frase se muestra en un recuadro bajo el calendario y puede eliminarse tanto desde el diario como desde esa lista.
 14. El bloque de escritura del diario utiliza la tipografía "Inter" y un mayor espaciado entre líneas para una lectura cómoda.
 

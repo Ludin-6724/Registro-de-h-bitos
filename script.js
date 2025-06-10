@@ -42,6 +42,8 @@
                 data = parsed;
                 data.users.forEach(u=>{
                     if(!Array.isArray(u.habits)) u.habits = [];
+                    if(typeof u.longTermTotal !== 'number') u.longTermTotal = 0;
+                    if(typeof u.weeks !== 'number') u.weeks = 0;
                     u.habits.forEach(h=>{
                         if(typeof h.progress !== 'number') h.progress = 0;
                         if(typeof h.goal !== 'number') h.goal = 1;
@@ -148,6 +150,14 @@
         const start = startOfWeek();
         if(data.lastReset !== start){
             data.users.forEach(u=>{
+                // calculate last week's average before clearing
+                const weekAvg = average(u);
+                if(u.habits.length){
+                    if(typeof u.longTermTotal !== 'number') u.longTermTotal = 0;
+                    if(typeof u.weeks !== 'number') u.weeks = 0;
+                    u.longTermTotal += weekAvg;
+                    u.weeks += 1;
+                }
                 u.habits.forEach(h=> {
                     h.progress = 0;
                     h.lastLogged = null;
@@ -165,6 +175,13 @@
             total += Math.min(1, h.progress / h.goal);
         });
         return user.habits.length ? total / user.habits.length : 0;
+    }
+
+    function overallAverage(user){
+        if(typeof user.longTermTotal !== 'number' || typeof user.weeks !== 'number' || user.weeks === 0){
+            return 0;
+        }
+        return user.longTermTotal / user.weeks;
     }
 
     function renderCalendar(){
@@ -232,7 +249,7 @@
             bar.className = 'progress-bar';
             const fill = document.createElement('div');
             fill.className = 'progress-fill';
-            const avg = average(user);
+            const avg = overallAverage(user);
             fill.style.width = (avg*100)+'%';
             fill.style.background = 'linear-gradient(to right, #A0D2EB, #e74c3c)';
             bar.appendChild(fill);
@@ -311,7 +328,7 @@
                 pb.className = 'progress-bar';
                 const pf = document.createElement('div');
                 pf.className = 'progress-fill';
-                const avg = average(user);
+                const avg = overallAverage(user);
                 pf.style.width = (avg*100)+'%';
                 pf.style.background = 'linear-gradient(to right, #A0D2EB, #e74c3c)';
                 pb.appendChild(pf);
@@ -323,7 +340,7 @@
     }
 
     function addUser(name){
-        data.users.push({ name: name, habits: [] });
+        data.users.push({ name: name, habits: [], longTermTotal: 0, weeks: 0 });
         save();
         render();
         updateToday();
