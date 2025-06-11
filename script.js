@@ -279,6 +279,7 @@
 
                 const nameSpan = document.createElement('span');
                 nameSpan.textContent = h.name;
+                nameSpan.className = 'habit-name';
 
                 const barWrap = document.createElement('div');
                 barWrap.className = 'bar-wrap';

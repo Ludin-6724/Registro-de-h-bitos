@@ -17,5 +17,6 @@ Esta aplicación permite registrar hábitos de manera local usando el navegador.
 12. Al iniciar una nueva semana las barras de cada hábito se reinician. La barra principal promedia las últimas cuatro semanas (incluyendo la actual) para reflejar el avance reciente.
 13. Cada nota del diario incluye un campo para escribir "en una frase lo que Dios me está hablando". Esa frase se muestra en un recuadro bajo el calendario y puede eliminarse tanto desde el diario como desde esa lista.
 14. El bloque de escritura del diario utiliza la tipografía "Inter" y un mayor espaciado entre líneas para una lectura cómoda.
+15. Las barras de cada hábito se alinean entre sí para que comiencen a la misma altura sin importar la longitud del nombre.
 
 Los datos se guardan en `localStorage` y se reinician al comenzar una nueva semana según la hora local del dispositivo.

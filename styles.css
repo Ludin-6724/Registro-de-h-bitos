@@ -190,6 +190,13 @@ button:hover {
     margin-bottom: 5px;
 }
 
+.habit-name {
+    flex: 0 0 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .bar-wrap {
     flex: 1;
     display: flex;
