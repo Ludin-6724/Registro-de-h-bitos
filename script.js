@@ -112,12 +112,15 @@
     }
 
     function checkTaskWeek(){
-        const start = startOfWeek();
-        if(tasks.start !== start){
-            tasks = { start, items: [] };
-            saveTasks();
-            renderWeeklyTasks();
-        }
+        const now = new Date(startOfDay());
+        const limit = new Date(now);
+        limit.setDate(now.getDate() - 28);
+        tasks.items = tasks.items.filter(t => {
+            const d = new Date(t.date || now);
+            return d >= limit;
+        });
+        saveTasks();
+        renderWeeklyTasks();
     }
 
     function addWeeklyTask(text, done, date){
