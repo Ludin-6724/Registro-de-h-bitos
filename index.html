@@ -3,55 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web Básica</title>
+    <title>Registro de Hábitos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1> REGISTRADOR DE HÁBITOS DE LUDIN </h1>
+        <h1>Registro de Hábitos</h1>
+        <div class="header-right">
+            <span id="today"></span>
+            <button id="addUserBtn">Agregar usuario</button>
+        </div>
     </header>
-    <div>
 
+    <div id="userForm" class="modal hidden">
+        <h2>Nuevo usuario</h2>
+        <input type="text" id="userName" placeholder="Nombre del usuario">
+        <button id="createUserBtn">Crear</button>
     </div>
-    <main>
-        <div id="dia-actual"></div>
-        <div class="barra-container">
-            <div class="barra-estado" id="barraEstado"></div>
-        </div>
-        <div class="botones-container">
-            <div class="caja">
-                <button id="boton1" onclick="incrementarBarra(1)"> 0 dosis </button>
-            </div>
-            <div class="caja">
-                <button id="boton2" onclick="incrementarBarra(2)"> 0 Redes </button>
-            </div>
-            <div class="caja">
-                <button id="boton3" onclick="incrementarBarra(3)"> Lectura y devocional</button>
-            </div>
-            <div class="caja">
-                <button id="boton4" onclick="incrementarBarra(4)">Lectura bíblica </button>
-            </div>
-            <div class="caja">
-                <button id="boton5" onclick="incrementarBarra(5)"> Ejercicio físico </button>
-            </div>
-            <div class="caja">
-                <button id="boton6" onclick="incrementarBarra(6)"> Escribir en diario</button>
+
+    <div id="habitForm" class="modal hidden">
+        <h2>Nuevo hábito</h2>
+        <input type="text" id="habitName" placeholder="Nombre del hábito">
+        <input type="number" id="habitGoal" min="1" value="7" placeholder="Objetivo semanal">
+        <button id="saveHabitBtn">Guardar</button>
+    </div>
+
+    <div id="journalModal" class="modal hidden fullscreen dark">
+        <div id="journalContent">
+            <textarea id="journalText" placeholder="Escribe tu nota..."></textarea>
+            <input type="text" id="journalPhrase" placeholder="En una frase lo que Dios me está hablando">
+            <button id="deletePhraseBtn">Borrar frase</button>
+            <ul id="checkList"></ul>
+            <button id="addCheckBtn">Agregar tarea</button>
+            <div class="journal-actions">
+                <button id="downloadNoteBtn">Guardar nota</button>
+                <button id="closeJournalBtn">Cerrar</button>
             </div>
         </div>
-        <div class="acciones-container">
-            <button class="boton-accion" onclick="resetearBarra()">Falla grave</button>
-            <button class="boton-accion" onclick="resetearDiaInicio()">Restablecer Día de Inicio</button>
-        </div>
-        <br>
-        <br>
-        <div id="mensaje-felicitaciones" style="display: none; font-size: 24px; color: green; text-align: center; margin-top: 20px;">¡Felicitaciones, lo lograste!</div>
-        <br>
-        <br>
-        <div id="mensaje-muy-bien" style="display: none; font-size: 18px; color: rgb(193, 193, 203); text-align: center; margin-top: 20px;">¡Muy bien hecho!</div>
-    </main>
-    <footer>
-        <p>&copy; 2024 Ludin Guerra</p>
-    </footer>
+    </div>
+
+    <div id="layout">
+        <div id="users"></div>
+        <aside id="competition">
+            <h2>Competencia semanal</h2>
+            <div id="scoreboard"></div>
+            <div id="miniCalendar"></div>
+            <div id="taskBox">
+                <h3>Tareas semanales</h3>
+                <ul id="weeklyTasks"></ul>
+            </div>
+            <div id="phraseBox">
+                <h3>Frases</h3>
+                <ul id="phraseList"></ul>
+            </div>
+        </aside>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
